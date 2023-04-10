@@ -21,9 +21,15 @@ private:
 
 public:
 	static void MoveCursor(int x, int y);
-	static void Clear();
+	void Clear();
+	void DrawFrame();
+
+	void SortOrganisms();
 
 	void Start();
+	std::unique_ptr<Organism>& CheckForCollision(std::unique_ptr<Organism>& current);
+
+	void AddNewOrganism(std::unique_ptr<Organism>&& organism);
 
 	const int& GetSize();
 

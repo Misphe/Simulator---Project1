@@ -4,13 +4,17 @@
 
 
 void Wolf::Draw() {
-	int x = (GetX() * 2) + 1;
-	int y = GetY() + 1;
-	World::MoveCursor(x, y);
+	int x = (GetX() * 2);
+	int y = GetY();
+	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
 	_putch('W');
 }
 
 Wolf::Wolf(World& ref_world) : Animal(ref_world) {
 	SetStrength(9);
 	SetInitiative(5);
+}
+
+std::unique_ptr<Animal> Wolf::Breed() const {
+	return std::make_unique<Wolf>(world);
 }

@@ -1,6 +1,5 @@
 #include "World.h"
-#include <conio.h>
-#include <windows.h>
+#include "Libraries.h"
 
 World::World(int set_size) : size(set_size) {}
 
@@ -10,47 +9,37 @@ const int& World::GetSize() {
 
 void World::Start() {
 	organisms.emplace_back(new Human(*this));
-	organisms.emplace_back(new Sheep(*this));
 	organisms.emplace_back(new Wolf(*this));
-	
+	organisms.emplace_back(new Wolf(*this));
+	organisms.emplace_back(new Wolf(*this));
+	organisms.emplace_back(new Wolf(*this));
 
+	SortOrganisms();
+
+	DrawFrame();
 	while (true) {
 		DrawWorld();
+		if (organisms.size() >= GetSize() * GetSize()) {
+			exit(0);
+		}
 		ExecuteTurn();
 	}
 }
 
 void World::ExecuteTurn() {
-	for (auto& organism : organisms) {
-		organism->Action();
+	int size = organisms.size();
+	for (int i = 0; i < size; i++) {
+		organisms[i]->Action();
+		std::unique_ptr<Organism>& collided_organism = CheckForCollision(organisms[i]);
+		if (collided_organism.get() != nullptr) {
+			organisms[i]->Collision(collided_organism);
+		}
 	}
+	SortOrganisms();
 }
 
 void World::DrawWorld() {
-	int size = GetSize();
 	Clear();
-	MoveCursor(1, 1);
-
-	// Draw top side of the frame 
-	for (int i = 1; i <= size + 2; i++) {
-		_putch('#');
-		_putch(' ');
-	}
-
-	// Draw left and right side of the frame
-	for (int i = 2; i < size + 2; i++) {
-		MoveCursor(0, i);
-		_putch('#');
-		MoveCursor(size * 2 + 3, i);
-		_putch('#');
-	}
-
-	// Draw bottom side of the frame
-	MoveCursor(1, size + 2);
-	for (int i = 1; i <= size + 2; i++) {
-		_putch('#');
-		_putch(' ');
-	}
 
 	// Draw Organisms
 	for (auto& organism : organisms) {
@@ -69,12 +58,67 @@ void World::MoveCursor(int x, int y) {
 // Clears screen faster than system("cls")
 void World::Clear()
 {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	GetConsoleScreenBufferInfo(hConsole, &csbi);
-	DWORD dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-	COORD home = { 0, 0 };
-	DWORD dwCharsWritten;
-	FillConsoleOutputCharacter(hConsole, ' ', dwConSize, home, &dwCharsWritten);
-	SetConsoleCursorPosition(hConsole, home);
+	int size = GetSize();
+
+	// Draw top side of the frame 
+	for (int i = 0; i < size; i++) {
+		MoveCursor(BOARD_POS_X + 1, i + BOARD_POS_Y + 1);
+		for (int j = 0; j < size; j++) {
+			_putch(' ');
+			_putch(' ');
+		}
+	}
+}
+
+void World::DrawFrame() {
+	int size = GetSize();
+	Clear();
+	MoveCursor(BOARD_POS_X, BOARD_POS_Y);
+
+	// Draw top side of the frame 
+	for (int i = 1; i <= size + 2; i++) {
+		_putch('#');
+		_putch(' ');
+	}
+
+	// Draw left and right side of the frame
+	for (int i = 1; i < size + 2; i++) {
+		MoveCursor(BOARD_POS_X, i + BOARD_POS_Y);
+		_putch('#');
+		MoveCursor(size * X_SCALING + 2 + BOARD_POS_X, i + BOARD_POS_Y);
+		_putch('#');
+	}
+
+	// Draw bottom side of the frame
+	MoveCursor(BOARD_POS_X, size + 1 + BOARD_POS_Y);
+	for (int i = 1; i <= size + 2; i++) {
+		_putch('#');
+		_putch(' ');
+	}
+}
+
+void World::SortOrganisms() {
+	std::sort(organisms.begin(), organisms.end(), 
+		[](const auto& first, const auto& second) {
+			if (first->GetInitiative() != second->GetInitiative()) {
+				return first->GetInitiative() > second->GetInitiative();
+			}
+			else {
+				return first->GetAliveTime() > second->GetAliveTime();
+			}
+		});
+}
+
+std::unique_ptr<Organism>& World::CheckForCollision(std::unique_ptr<Organism>& current) {
+	for (auto& organism : organisms) {
+		if (current->GetX() == organism->GetX() && current->GetY() == organism->GetY() && &(*current) != &(*organism)) {
+			return organism;
+		}
+	}
+	static std::unique_ptr<Organism> null(nullptr);
+	return null;
+}
+
+void World::AddNewOrganism(std::unique_ptr<Organism>&& organism) {
+	organisms.emplace_back(std::move(organism));
 }

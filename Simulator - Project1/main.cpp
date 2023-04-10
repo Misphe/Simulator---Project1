@@ -3,7 +3,7 @@
 
 int main() {
 	srand(time(NULL));
-	int size = 20;
+	int size = 10;
 	World world(size);
 	world.Start();
 }

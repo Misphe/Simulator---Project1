@@ -28,22 +28,27 @@ void Human::Action() {
 			};
 		}
 	}
+	alive_time++;
 }
 
 // TODO
-void Human::Collision() {
+void Human::Collision(std::unique_ptr<Organism>& collided) {
 	// depends on his power and whether it's activated or not
 }
 
 void Human::Draw() {
-	int x = (GetX() * 2) + 1;
-	int y = GetY() + 1;
-	World::MoveCursor(x, y);
+	int x = (GetX() * X_SCALING);
+	int y = GetY();
+	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
 	_putch('H');
 }
 
 Human::Human(World& ref_world) : Animal(ref_world) {
 	SetStrength(5);
 	SetInitiative(4);
+}
+
+std::unique_ptr<Animal> Human::Breed() const {
+	return std::make_unique<Human>(world);
 }
 

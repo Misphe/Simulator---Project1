@@ -45,14 +45,18 @@ const int& Organism::GetInitiative() const {
 	return initiative;
 }
 
-Organism::Organism(World& ref_world) : world(ref_world) {
+const int& Organism::GetAliveTime() const {
+	return alive_time;
+}
+
+Organism::Organism(World& ref_world) : world(ref_world), alive_time(1) {
 	int set_x = rand() % world.GetSize() + 1;
 	int set_y = rand() % world.GetSize() + 1;
 	SetX(set_x);
 	SetY(set_y);
 }
 
-Organism::Organism(World& ref_world, int set_x, int set_y) : world(ref_world) {
+Organism::Organism(World& ref_world, int set_x, int set_y) : world(ref_world), alive_time(1) {
 	SetX(set_x);
 	SetY(set_y);
 }
