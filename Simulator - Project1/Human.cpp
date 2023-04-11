@@ -32,16 +32,25 @@ void Human::Action() {
 		}
 	}
 	alive_time++;
+	world.DecrementSlot(GetPrevPosition());
+	world.IncrementSlot(GetPosition());
 }
 
 // TODO
 void Human::Collision(std::unique_ptr<Organism>& collided) {
 	// depends on his power and whether it's activated or not
+
+	if (AttackerWins(collided)) {
+		collided->Die();
+	}
+	else {
+		this->Die();
+	}
 }
 
 void Human::Draw() {
-	int x = (GetX() * X_SCALING);
-	int y = GetY();
+	int x = (GetX() * X_SCALING) + 2;
+	int y = GetY() + 1;
 	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
 	_putch('H');
 }
