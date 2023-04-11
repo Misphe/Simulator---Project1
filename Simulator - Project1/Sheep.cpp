@@ -4,8 +4,8 @@
 
 
 void Sheep::Draw() {
-	int x = (GetX() * 2);
-	int y = GetY();
+	int x = (GetX() * X_SCALING) + 2;
+	int y = GetY() + 1;
 	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
 	_putch('S');
 }

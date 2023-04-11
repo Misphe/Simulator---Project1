@@ -2,13 +2,13 @@
 #include "World.h"
 
 void Organism::SetX(int new_x) {
-	if (new_x <= world.GetSize() && new_x >= 1) {
+	if (new_x < world.GetSize() && new_x >= 0) {
 		position.x = new_x;
 	}
 }
 
 void Organism::SetY(int new_y) {
-	if (new_y <= world.GetSize() && new_y >= 1) {
+	if (new_y < world.GetSize() && new_y >= 0) {
 		position.y = new_y;
 	}
 }
@@ -58,13 +58,24 @@ const Position& Organism::GetPosition() const {
 }
 
 Organism::Organism(World& ref_world) : world(ref_world), alive_time(1) {
-	int set_x = rand() % world.GetSize() + 1;
-	int set_y = rand() % world.GetSize() + 1;
+	int set_x = rand() % world.GetSize();
+	int set_y = rand() % world.GetSize();
 	SetX(set_x);
 	SetY(set_y);
+	alive = true;
 }
 
 Organism::Organism(World& ref_world, int set_x, int set_y) : world(ref_world), alive_time(1) {
 	SetX(set_x);
 	SetY(set_y);
+	alive = true;
+}
+
+void Organism::Die() {
+	alive = false;
+	world.DecrementSlot(GetPosition());
+}
+
+const bool& Organism::IsAlive() const {
+	return alive;
 }

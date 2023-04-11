@@ -15,8 +15,12 @@ public:
 	void GoBack(); // in position
 
 	void RandomMove();
+	bool AttackerWins(std::unique_ptr<Organism>& collided);
 
 	Animal(World& ref_world) : Organism(ref_world), prev_position(position) {}
 	Animal(World& ref_world, int set_x, int set_y) : Organism(ref_world, set_x, set_y), prev_position(position) {}
+
+	// returns false when no space
+	bool SetChildsPosition(const Position& parent1_pos, const Position& parent2_pos);
 };
 

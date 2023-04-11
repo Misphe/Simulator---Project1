@@ -14,7 +14,7 @@ class World {
 private:
 	const int size;
 	std::vector<std::unique_ptr<Organism>> organisms;
-
+	int** map_slots;
 
 public:
 	static void MoveCursor(int x, int y);
@@ -29,9 +29,16 @@ public:
 	std::unique_ptr<Organism>& CheckForCollision(std::unique_ptr<Organism>& current);
 
 	void AddNewOrganism(std::unique_ptr<Organism>&& organism);
+	void DeleteDead();
 
 	const int& GetSize();
 
 	World(int set_size);
+
+	void IncrementSlot(const Position& position);
+	void DecrementSlot(const Position& position);
+	bool IsEmpty(Position position);
+
+
 };
 
