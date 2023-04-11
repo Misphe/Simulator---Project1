@@ -15,14 +15,13 @@ private:
 	const int size;
 	std::vector<std::unique_ptr<Organism>> organisms;
 
-	// add later
-	void ExecuteTurn();
-	void DrawWorld();
 
 public:
 	static void MoveCursor(int x, int y);
 	void Clear();
 	void DrawFrame();
+	void ExecuteTurn();
+	void DrawWorld();
 
 	void SortOrganisms();
 

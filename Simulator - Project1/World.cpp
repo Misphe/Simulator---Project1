@@ -18,9 +18,8 @@ void World::Start() {
 
 	DrawFrame();
 	while (true) {
-		DrawWorld();
 		if (organisms.size() >= GetSize() * GetSize()) {
-			exit(0);
+			//exit(0);
 		}
 		ExecuteTurn();
 	}
@@ -54,8 +53,6 @@ void World::MoveCursor(int x, int y) {
 	std::cout << "\033[" << y << ";" << x << "H";
 }
 
-
-// Clears screen faster than system("cls")
 void World::Clear()
 {
 	int size = GetSize();
