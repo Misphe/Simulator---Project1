@@ -5,12 +5,9 @@
 
 void Animal::Action() {
 	//rand() % 2 ? MoveX(rand() % 2 ? 1 : -1) : MoveY(rand() % 2 ? 1 : -1);
-	if (rand() % 2) {
-		rand() % 2 ? MoveX(1) : MoveX(-1);
-	}
-	else {
-		rand() % 2 ? MoveY(1) : MoveY(-1);
-	}
+
+	UpdatePrevPosition();
+	RandomMove();
 	alive_time++;
 }
 
@@ -18,15 +15,16 @@ void Animal::Collision(std::unique_ptr<Organism>& collided) {
 
 	if (typeid(*collided) == typeid(*this)) {
 		// breeding case
-
+		//world.DrawWorld();
+		GoBack();
 		// Create a new instance of the same type as the current object
-		std::unique_ptr<Organism> new_animal = Breed();
+		std::unique_ptr<Animal> new_animal = Breed();
+		while (new_animal->GetPosition() == collided->GetPosition() || new_animal->GetPosition() == this->GetPosition()) {
+			new_animal->RandomMove();
+		}
 
-		int x_change = (rand() % 2) ? 1 : -1;
-		int y_change = (rand() % 2) ? 1 : -1;
-		new_animal->MoveX(x_change);
-		new_animal->MoveY(y_change);
 		world.AddNewOrganism(std::move(new_animal));
+		//world.DrawWorld();
 	}
 
 	else {
@@ -36,4 +34,24 @@ void Animal::Collision(std::unique_ptr<Organism>& collided) {
 	// common code
 }
 
+const Position& Animal::GetPrevPosition() const {
+	return prev_position;
+}
+
+void Animal::UpdatePrevPosition() {
+	prev_position = position;
+}
+
+void Animal::GoBack() {
+	SetPosition(GetPrevPosition());
+}
+
+void Animal::RandomMove() {
+	if (rand() % 2) {
+		rand() % 2 ? this->MoveX(1) : this->MoveX(-1);
+	}
+	else {
+		rand() % 2 ? this->MoveY(1) : this->MoveY(-1);
+	}
+}
 

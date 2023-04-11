@@ -4,6 +4,9 @@
 
 void Human::Action() {
 	bool success = false;
+	UpdatePrevPosition();
+	world.DrawWorld();
+
 	while (!success) {
 		int move = _getch();
 		if (move == ARROW_CLICK) {

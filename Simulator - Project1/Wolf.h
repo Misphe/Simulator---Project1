@@ -6,5 +6,6 @@ public:
 	std::unique_ptr<Animal> Breed() const override;
 
 	Wolf(World& ref_world);
+	Wolf(World& ref_world, int set_x, int set_y);
 };
 

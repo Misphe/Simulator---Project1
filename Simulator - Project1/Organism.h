@@ -7,6 +7,9 @@ class World;
 struct Position {
 	int x;
 	int y;
+	bool operator==(const Position pos2) const {
+		return (x == pos2.x && y == pos2.y);
+	}
 };
 
 
@@ -24,12 +27,14 @@ public:
 	const int& GetStrength() const;
 	const int& GetInitiative() const;
 	const int& GetAliveTime() const;
+	const Position& GetPosition() const;
 
 	void MoveX(int change);
 	void MoveY(int change);
 
 	void SetX(int new_x);
 	void SetY(int new_y);
+	void SetPosition(Position new_position);
 	void SetStrength(int new_strength);
 	void SetInitiative(int new_initiative);
 

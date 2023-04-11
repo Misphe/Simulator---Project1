@@ -21,6 +21,10 @@ void Organism::SetInitiative(int new_initiative) {
 	initiative = new_initiative;
 }
 
+void Organism::SetPosition(Position new_position) {
+	position = new_position;
+}
+
 void Organism::MoveX(int change) {
 	SetX(GetX() + change);
 }
@@ -47,6 +51,10 @@ const int& Organism::GetInitiative() const {
 
 const int& Organism::GetAliveTime() const {
 	return alive_time;
+}
+
+const Position& Organism::GetPosition() const {
+	return position;
 }
 
 Organism::Organism(World& ref_world) : world(ref_world), alive_time(1) {
