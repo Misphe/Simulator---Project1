@@ -3,64 +3,109 @@
 #include "World.h"
 
 void Human::Action() {
-	bool success = false;
 	UpdatePrevPosition();
-	world.DrawWorld();
+	world.UpdateMapSlotsView();
+	switch (move) {
+		case UP_ARROW:
+			MoveY(-1);
+			break;
 
-	while (!success) {
-		int move = _getch();
-		if (move == ARROW_CLICK) {
-			move = _getch();
-			success = true;
-			switch (move) {
-			case UP_ARROW:
-				MoveY(-1);
-				break;
+		case DOWN_ARROW:
+			MoveY(1);
+			break;
 
-			case DOWN_ARROW:
-				MoveY(1);
-				break;
+		case LEFT_ARROW:
+			MoveX(-1);
+			break;
 
-			case LEFT_ARROW:
-				MoveX(-1);
-				break;
+		case RIGHT_ARROW:
+			MoveX(1);
+			break;
+	};
 
-			case RIGHT_ARROW:
-				MoveX(1);
-				break;
-			};
-		}
-	}
 	alive_time++;
 	world.DecrementSlot(GetPrevPosition());
 	world.IncrementSlot(GetPosition());
 }
 
-// TODO
 void Human::Collision(std::unique_ptr<Organism>& collided) {
 	// depends on his power and whether it's activated or not
-
-	if (AttackerWins(collided)) {
-		collided->Die();
-	}
-	else {
-		this->Die();
+	switch (power_activated) {
+		case false:
+			if (AttackerWins(collided)) {
+				collided->Die();
+			}
+			else {
+				this->Die();
+			}
+			break;
+		case true:
+			break;
 	}
 }
 
 void Human::Draw() {
+	if (!IsAlive()) {
+		return;
+	}
 	int x = (GetX() * X_SCALING) + 2;
 	int y = GetY() + 1;
 	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
-	_putch('H');
+	_putch(HUMAN_SYMBOL);
 }
 
-Human::Human(World& ref_world) : Animal(ref_world) {
+Human::Human(World& ref_world) : Animal(ref_world), power_activated(false) {
 	SetStrength(5);
 	SetInitiative(4);
+	move = '\0';
 }
 
 std::unique_ptr<Animal> Human::Breed() const {
 	return std::make_unique<Human>(world);
 }
 
+bool Human::Defended(Organism& attacker) {
+	return Animal::Defended(attacker);
+}
+
+void Human::SetMove(int& input) {
+	move = input;
+}
+
+void Human::FlickPowerState() {
+	power_activated = !power_activated;
+}
+
+const char& Human::GetInput() const {
+	return move;
+}
+
+const bool& Human::PowerActivated() const
+{
+	return power_activated;
+}
+
+void Human::TakeInput() {
+	bool success = false;
+	while (!success) {
+		int input = _getch();
+		switch (input) {
+			case ARROW_CLICK:
+				input = _getch();
+				SetMove(input);
+				success = true;
+				break;
+			case SUPERPOWER:
+				if (!PowerActivated()) {
+					FlickPowerState();
+				}
+				break;
+		};
+		
+	}
+}
+
+void Human::Die() {
+	world.AbortPlayer();
+	Animal::Die();
+}
