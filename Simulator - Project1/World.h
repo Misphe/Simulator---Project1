@@ -12,33 +12,41 @@ class Organism;
 
 class World {
 private:
-	const int size;
+	const int size_x;
+	const int size_y;
 	std::vector<std::unique_ptr<Organism>> organisms;
 	int** map_slots;
-
-public:
-	static void MoveCursor(int x, int y);
-	void Clear();
-	void DrawFrame();
-	void ExecuteTurn();
-	void DrawWorld();
+	Human* player;
 
 	void SortOrganisms();
-
-	void Start();
 	std::unique_ptr<Organism>& CheckForCollision(std::unique_ptr<Organism>& current);
+
+	void ExecuteTurn();
+	void Clear();
+	void DrawFrame();
+
+public:
+	void DrawWorld();
+	void Start();
+	static void MoveCursor(int x, int y);
 
 	void AddNewOrganism(std::unique_ptr<Organism>&& organism);
 	void DeleteDead();
 
-	const int& GetSize();
+	const int& GetSizeX() const;
+	const int& GetSizeY() const;
 
-	World(int set_size);
+	void SetPlayer();
+	void AbortPlayer();
+	World(int set_size_x, int set_size_y);
 
+	int GetCountOnSlot(const Position& slot) const;
 	void IncrementSlot(const Position& position);
 	void DecrementSlot(const Position& position);
-	bool IsEmpty(Position position);
+	bool IsEmpty(Position position) const;
 
-
+	void UpdateOneOrganism(std::unique_ptr<Organism>& current);
+	void UpdateOneOrganism(std::unique_ptr<Animal>& current);
+	void UpdateMapSlotsView();
 };
 
