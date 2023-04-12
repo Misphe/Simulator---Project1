@@ -19,11 +19,12 @@ void Animal::Collision(std::unique_ptr<Organism>& collided) {
 		// Create a new instance of the same type as the current object
 		std::unique_ptr<Animal> new_animal = Breed();
 		if (new_animal->SetChildsPosition(this->GetPosition(), collided->GetPosition())) {
+			new_animal->Draw();
 			world.AddNewOrganism(std::move(new_animal));
 		}
 	}
 	else {
-		if (AttackerWins(collided)) {
+ 		if (AttackerWins(collided)) {
 			collided->Die();
 		}
 		else {
@@ -32,41 +33,33 @@ void Animal::Collision(std::unique_ptr<Organism>& collided) {
 	}
 }
 
-
-const Position& Animal::GetPrevPosition() const {
-	return prev_position;
-}
-
-void Animal::UpdatePrevPosition() {
-	prev_position = position;
-}
-
-void Animal::GoBack() {
-	world.DecrementSlot(GetPosition());
-	SetPosition(GetPrevPosition());
-	world.IncrementSlot(GetPosition());
-}
-
 void Animal::RandomMove() {
-	if (rand() % 2) {
-		rand() % 2 ? this->MoveX(1) : this->MoveX(-1);
-	}
-	else {
-		rand() % 2 ? this->MoveY(1) : this->MoveY(-1);
-	}
+	do {
+		if (rand() % 2) {
+			rand() % 2 ? this->MoveX(1) : this->MoveX(-1);
+		}
+		else {
+			rand() % 2 ? this->MoveY(1) : this->MoveY(-1);
+		}
+	} while (GetPosition() == GetPrevPosition());
+
 	world.DecrementSlot(GetPrevPosition());
 	world.IncrementSlot(GetPosition());
 }
 
-bool Animal::AttackerWins(std::unique_ptr<Organism>& collided) {
-	if (this->GetStrength() > collided->GetStrength()) {
+bool Animal::AttackerWins(std::unique_ptr<Organism>& victim) {
+	return !victim->Defended(*this);
+}
+
+bool Animal::Defended(Organism& attacker) {
+	if (this->GetStrength() > attacker.GetStrength()) {
 		return true;
 	}
-	else if (this->GetStrength() < collided->GetStrength()) {
+	else if (this->GetStrength() < attacker.GetStrength()) {
 		return false;
 	}
 	else {
-		return this->GetAliveTime() > collided->GetAliveTime();
+		return this->GetAliveTime() > attacker.GetAliveTime();
 	}
 }
 
@@ -81,7 +74,7 @@ bool Animal::SetChildsPosition(const Position& parent1_pos, const Position& pare
 			if (tested[random] != true) {
 				tested[random] = true;
 				tmp = { parent1_pos.x + adjacent[random].x, parent1_pos.y + adjacent[random].y };
-				if (tmp.InsideWorld(world.GetSize()) && world.IsEmpty(tmp)) {
+				if (tmp.InsideWorld(world.GetSizeX(), world.GetSizeY()) && world.IsEmpty(tmp)) {
 					SetPosition(tmp);
 					UpdatePrevPosition();
 					return true;
@@ -99,7 +92,7 @@ bool Animal::SetChildsPosition(const Position& parent1_pos, const Position& pare
 			if (tested[random] != true) {
 				tested[random] = true;
 				tmp = { parent2_pos.x + adjacent[random].x, parent2_pos.y + adjacent[random].y };
-				if (tmp.InsideWorld(world.GetSize()) && world.IsEmpty(tmp)) {
+				if (tmp.InsideWorld(world.GetSizeX(), world.GetSizeY()) && world.IsEmpty(tmp)) {
 					SetPosition(tmp);
 					UpdatePrevPosition();
 					return true;
