@@ -10,8 +10,11 @@ struct Position {
 	bool operator==(const Position pos2) const {
 		return (x == pos2.x && y == pos2.y);
 	}
-	bool InsideWorld(int size) {
-		return (x < size && x >= 0 && y < size && y >= 0);
+	bool operator!=(const Position pos2) const {
+		return !(x == pos2.x && y == pos2.y);
+	}
+	bool InsideWorld(int size_x, int size_y) const {
+		return (x < size_x && x >= 0 && y < size_y && y >= 0);
 	}
 };
 
@@ -23,6 +26,7 @@ protected:
 	int alive_time;
 	bool alive;
 	Position position;
+	Position prev_position;
 	World& world;
 
 public:
@@ -33,9 +37,12 @@ public:
 	const int& GetAliveTime() const;
 	const Position& GetPosition() const;
 	const bool& IsAlive() const;
+	const Position& GetPrevPosition() const;
 
 	void MoveX(int change);
 	void MoveY(int change);
+	void UpdatePrevPosition();
+	void GoBack(); // in position
 
 	void SetX(int new_x);
 	void SetY(int new_y);
@@ -47,6 +54,7 @@ public:
 	virtual void Collision(std::unique_ptr<Organism>& collided) = 0;
 	virtual void Draw() = 0;
 	virtual void Die();
+	virtual bool Defended(Organism& attacker) = 0;
 
 	Organism(World& ref_world);
 	Organism(World& ref_world, int set_x, int set_y);
