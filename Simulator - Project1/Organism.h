@@ -51,10 +51,10 @@ public:
 	void SetInitiative(int new_initiative);
 
 	virtual void Action() = 0;
-	virtual void Collision(std::unique_ptr<Organism>& collided) = 0;
+	virtual void Collision(std::unique_ptr<Organism>& defender) = 0;
 	virtual void Draw() = 0;
 	virtual void Die();
-	virtual bool Defended(Organism& attacker) = 0;
+	virtual int DefenseResult(Organism& attacker) = 0;
 
 	Organism(World& ref_world);
 	Organism(World& ref_world, int set_x, int set_y);

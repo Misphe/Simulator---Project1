@@ -6,6 +6,9 @@
 #include "Human.h"
 #include "Sheep.h"
 #include "Wolf.h"
+#include "Fox.h"
+#include "Turtle.h"
+#include "Antelope.h"
 
 // forward declaration to avoid circular dependencies
 class Organism;
@@ -47,6 +50,9 @@ public:
 
 	void UpdateOneOrganism(std::unique_ptr<Organism>& current);
 	void UpdateOneOrganism(std::unique_ptr<Animal>& current);
+	void UpdateOneOrganism(Organism& current);
 	void UpdateMapSlotsView();
+
+	const std::unique_ptr<Organism>& GetOrganismAtPos(Position spot);
 };
 

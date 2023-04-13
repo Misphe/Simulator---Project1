@@ -10,7 +10,7 @@ public:
 	void Draw() override;
 	std::unique_ptr<Animal> Breed() const override;
 
-	bool Defended(Organism& attacker) override;
+	int DefenseResult(Organism& attacker) override;
 
 	Human(World& ref_world);
 	void TakeInput();

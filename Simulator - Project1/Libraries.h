@@ -10,7 +10,7 @@
 #define LEFT_ARROW 75
 #define ARROW_CLICK 224
 
-#define SUPERPOWER 'g'
+#define SUPERPOWER 'f'
 
 #define BOARD_POS_X 0 // at least 0
 #define BOARD_POS_Y 3 // at least 0
@@ -21,5 +21,14 @@
 #define HUMAN_SYMBOL 'H'
 #define WOLF_SYMBOL 'W'
 #define SHEEP_SYMBOL 'S'
+#define FOX_SYMBOL 'F'
+#define TURTLE_SYMBOL 'T'
+#define ANTELOPE_SYMBOL 'A'
+
+#define ATTACKER_WINS 1
+#define DEFENDER_WINS 0
+#define ATTACKER_RETREATS 2
+#define DEFENDER_RUNS_AWAY 3
+
 
 #define SLOW_MODE false

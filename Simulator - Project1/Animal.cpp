@@ -4,32 +4,39 @@
 #include <memory>
 
 void Animal::Action() {
-	//rand() % 2 ? MoveX(rand() % 2 ? 1 : -1) : MoveY(rand() % 2 ? 1 : -1);
 	UpdatePrevPosition();
 	RandomMove();
 	alive_time++;
 }
 
-void Animal::Collision(std::unique_ptr<Organism>& collided) {
-	if (!collided->IsAlive()) return;
+void Animal::Collision(std::unique_ptr<Organism>& defender) {
+	if (!defender->IsAlive()) return;
 
-	if (typeid(*collided) == typeid(*this)) {
+	if (typeid(*defender) == typeid(*this)) {
 		// breeding case
 		GoBack();
 		// Create a new instance of the same type as the current object
 		std::unique_ptr<Animal> new_animal = Breed();
-		if (new_animal->SetChildsPosition(this->GetPosition(), collided->GetPosition())) {
+		if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
 			new_animal->Draw();
 			world.AddNewOrganism(std::move(new_animal));
 		}
 	}
 	else {
- 		if (AttackerWins(collided)) {
-			collided->Die();
-		}
-		else {
+		int result = FightResult(defender);
+		switch (result) {
+		case ATTACKER_WINS:
+			defender->Die();
+			break;
+		case DEFENDER_WINS:
 			this->Die();
-		}
+			break;
+		case ATTACKER_RETREATS:
+			GoBack();
+			break;
+		case DEFENDER_RUNS_AWAY:
+			break;
+		};
 	}
 }
 
@@ -47,19 +54,25 @@ void Animal::RandomMove() {
 	world.IncrementSlot(GetPosition());
 }
 
-bool Animal::AttackerWins(std::unique_ptr<Organism>& victim) {
-	return !victim->Defended(*this);
+int Animal::FightResult(std::unique_ptr<Organism>& victim) {
+	return victim->DefenseResult(*this);
 }
 
-bool Animal::Defended(Organism& attacker) {
+int Animal::DefenseResult(Organism& attacker) {
 	if (this->GetStrength() > attacker.GetStrength()) {
-		return true;
+		return DEFENDER_WINS;
 	}
 	else if (this->GetStrength() < attacker.GetStrength()) {
-		return false;
+		return ATTACKER_WINS;
+	}
+	else if (this->GetAliveTime() > attacker.GetAliveTime()){
+		return DEFENDER_WINS;
+	}
+	else if (this->GetAliveTime() < attacker.GetAliveTime()) {
+		return ATTACKER_WINS;
 	}
 	else {
-		return this->GetAliveTime() > attacker.GetAliveTime();
+		return ATTACKER_WINS;
 	}
 }
 

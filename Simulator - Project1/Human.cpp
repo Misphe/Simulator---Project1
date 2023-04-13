@@ -32,12 +32,7 @@ void Human::Collision(std::unique_ptr<Organism>& collided) {
 	// depends on his power and whether it's activated or not
 	switch (power_activated) {
 		case false:
-			if (AttackerWins(collided)) {
-				collided->Die();
-			}
-			else {
-				this->Die();
-			}
+			Animal::Collision(collided);
 			break;
 		case true:
 			break;
@@ -64,8 +59,8 @@ std::unique_ptr<Animal> Human::Breed() const {
 	return std::make_unique<Human>(world);
 }
 
-bool Human::Defended(Organism& attacker) {
-	return Animal::Defended(attacker);
+int Human::DefenseResult(Organism& attacker) {
+	return Animal::DefenseResult(attacker);
 }
 
 void Human::SetMove(int& input) {

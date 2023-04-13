@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Simulator - Project1/Simulator - Project1.vcxproj
+/Simulator - Project1/Simulator - Project1.vcxproj.filters

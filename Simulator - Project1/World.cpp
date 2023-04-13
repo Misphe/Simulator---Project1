@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Libraries.h"
+#include <algorithm>
 
 World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_size_y) {
 	map_slots = new int* [size_x];
@@ -11,11 +12,20 @@ World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_si
 	}
 	AddNewOrganism(std::make_unique<Human>(*this));
 	SetPlayer();
-	for (int i=0; i < 4; i++) {
+	for (int i = 0; i < 2; i++) {
 		AddNewOrganism(std::make_unique<Wolf>(*this));
 	}
 	for (int i = 0; i < 4; i++) {
 		AddNewOrganism(std::make_unique<Sheep>(*this));
+	}
+	for (int i = 0; i < 4; i++) {
+		AddNewOrganism(std::make_unique<Fox>(*this));
+	}
+	for (int i = 0; i < 4; i++) {
+		AddNewOrganism(std::make_unique<Turtle>(*this));
+	}
+	for (int i = 0; i < 6; i++) {
+		AddNewOrganism(std::make_unique<Antelope>(*this));
 	}
 }
 
@@ -46,7 +56,9 @@ void World::Start() {
 		}
 		else {
 			// confirm turn
-			_getch();
+			if (_getch() == ARROW_CLICK) {
+				_getch();
+			}
 		}
 		ExecuteTurn();
 	}
@@ -71,9 +83,7 @@ void World::ExecuteTurn() {
 	}
 
 	DeleteDead();
-	if (size != organisms.size()) {
-		SortOrganisms();
-	}
+	SortOrganisms();
 	UpdateMapSlotsView();
 }
 
@@ -99,6 +109,14 @@ void World::UpdateMapSlotsView() {
 		MoveCursor(size_x * 2 + 10, 4 + i);
 		for (int j = 0; j < size_x; j++) {
 			std::cout << GetCountOnSlot({ j,i });
+		}
+	}
+}
+
+const std::unique_ptr<Organism>& World::GetOrganismAtPos(Position spot) {
+	for (auto& organism : organisms) {
+		if (organism->GetPosition() == spot) {
+			return organism;
 		}
 	}
 }
@@ -146,7 +164,7 @@ void World::DrawFrame() {
 
 void World::SortOrganisms() {
 	std::sort(organisms.begin(), organisms.end(), 
-		[](const auto& first, const auto& second) {
+		[](const std::unique_ptr<Organism>& first, const std::unique_ptr<Organism>& second) -> bool {
 			if (first->GetInitiative() != second->GetInitiative()) {
 				return first->GetInitiative() > second->GetInitiative();
 			}
@@ -194,12 +212,27 @@ void World::UpdateOneOrganism(std::unique_ptr<Organism>& organism) {
 	if (organism->GetPosition() == organism->GetPrevPosition()) {
 		return;
 	}
-	MoveCursor(organism->GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism->GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
-	_putch(' ');
+	if (IsEmpty(organism->GetPrevPosition())) {
+		MoveCursor(organism->GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism->GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
+		_putch(' ');
+	}
 	if (!organism->IsAlive()) {
 		return;
 	}
 	organism->Draw();
+	std::cout << "\033[?25l";
+}
+
+void World::UpdateOneOrganism(Organism& organism) {
+	if (organism.GetPosition() == organism.GetPrevPosition()) {
+		return;
+	}
+	MoveCursor(organism.GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism.GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
+	_putch(' ');
+	if (!organism.IsAlive()) {
+		return;
+	}
+	organism.Draw();
 	std::cout << "\033[?25l";
 }
 
