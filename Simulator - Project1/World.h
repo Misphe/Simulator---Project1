@@ -19,10 +19,11 @@ private:
 	const int size_y;
 	std::vector<std::unique_ptr<Organism>> organisms;
 	int** map_slots;
+	Organism*** organisms_slots;
 	Human* player;
 
 	void SortOrganisms();
-	std::unique_ptr<Organism>& CheckForCollision(std::unique_ptr<Organism>& current);
+	Organism* CheckForCollision(std::unique_ptr<Organism>& current);
 
 	void ExecuteTurn();
 	void Clear();
@@ -47,12 +48,17 @@ public:
 	void IncrementSlot(const Position& position);
 	void DecrementSlot(const Position& position);
 	bool IsEmpty(Position position) const;
+	bool IsOrganismAt(Position position) const;
 
 	void UpdateOneOrganism(std::unique_ptr<Organism>& current);
 	void UpdateOneOrganism(std::unique_ptr<Animal>& current);
 	void UpdateOneOrganism(Organism& current);
 	void UpdateMapSlotsView();
 
-	const std::unique_ptr<Organism>& GetOrganismAtPos(Position spot);
+	const Organism* GetOrganismAtPos(Position spot);
+
+	void SetOrganismToSlot(Organism& organism);
+	void DeleteOrganismFromSlot(Organism& organism);
+	void UpdateOrganismSlot(Organism& organism);
 };
 
