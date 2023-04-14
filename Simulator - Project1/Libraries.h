@@ -13,7 +13,7 @@
 #define SUPERPOWER 'f'
 
 #define BOARD_POS_X 0 // at least 0
-#define BOARD_POS_Y 3 // at least 0
+#define BOARD_POS_Y 0 // at least 0
 #define X_SCALING 2 // blocks are placed every two coordinates instead of every one 
 #define X_FRAME 2 // block the frame takes from the left
 #define Y_FRAME 1 // the same sa above but y

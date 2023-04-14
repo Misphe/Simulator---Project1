@@ -4,12 +4,14 @@
 class Animal : public Organism {
 public:
 	virtual void Action() override;
-	virtual void Collision(std::unique_ptr<Organism>& defender) override;
-	virtual void Draw() override = 0;
+	virtual void Collision(Organism* defender) override;
+	virtual void Draw() const override = 0;
 	virtual std::unique_ptr<Animal> Breed() const = 0;
 
+	virtual char GetSymbol() const = 0;
+
 	void RandomMove();
-	int FightResult(std::unique_ptr<Organism>& victim);
+	int FightResult(Organism*& victim);
 	virtual int DefenseResult(Organism& attacker) override;
 
 	Animal(World& ref_world) : Organism(ref_world) {}

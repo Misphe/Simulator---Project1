@@ -3,7 +3,7 @@
 #include "Libraries.h"
 
 
-void Turtle::Draw() {
+void Turtle::Draw() const {
 	if (!IsAlive()) {
 		return;
 	}
@@ -31,6 +31,10 @@ int Turtle::DefenseResult(Organism& attacker)
 	else {
 		return Animal::DefenseResult(attacker);
 	}
+}
+
+char Turtle::GetSymbol() const {
+	return TURTLE_SYMBOL;
 }
 
 Turtle::Turtle(World& ref_world) : Animal(ref_world) {

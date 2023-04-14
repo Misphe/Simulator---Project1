@@ -28,7 +28,7 @@ void Human::Action() {
 	world.IncrementSlot(GetPosition());
 }
 
-void Human::Collision(std::unique_ptr<Organism>& collided) {
+void Human::Collision(Organism* collided) {
 	// depends on his power and whether it's activated or not
 	switch (power_activated) {
 		case false:
@@ -39,7 +39,7 @@ void Human::Collision(std::unique_ptr<Organism>& collided) {
 	}
 }
 
-void Human::Draw() {
+void Human::Draw() const {
 	if (!IsAlive()) {
 		return;
 	}
@@ -50,7 +50,7 @@ void Human::Draw() {
 }
 
 Human::Human(World& ref_world) : Animal(ref_world), power_activated(false) {
-	SetStrength(5);
+	SetStrength(10);
 	SetInitiative(4);
 	move = '\0';
 }
@@ -103,4 +103,8 @@ void Human::TakeInput() {
 void Human::Die() {
 	world.AbortPlayer();
 	Animal::Die();
+}
+
+char Human::GetSymbol() const {
+	return HUMAN_SYMBOL;
 }

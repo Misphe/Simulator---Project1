@@ -3,7 +3,7 @@
 #include "Libraries.h"
 
 
-void Sheep::Draw() {
+void Sheep::Draw() const  {
 	if (!IsAlive()) {
 		return;
 	}
@@ -21,6 +21,10 @@ Sheep::Sheep(World& ref_world) : Animal(ref_world) {
 Sheep::Sheep(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
 	SetStrength(4);
 	SetInitiative(4);
+}
+
+char Sheep::GetSymbol() const {
+	return SHEEP_SYMBOL;
 }
 
 std::unique_ptr<Animal> Sheep::Breed() const {

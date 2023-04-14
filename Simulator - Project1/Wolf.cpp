@@ -3,7 +3,7 @@
 #include "Libraries.h"
 
 
-void Wolf::Draw() {
+void Wolf::Draw() const {
 	if (!IsAlive()) {
 		return;
 	}
@@ -21,6 +21,10 @@ Wolf::Wolf(World& ref_world) : Animal(ref_world) {
 Wolf::Wolf(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
 	SetStrength(9);
 	SetInitiative(5);
+}
+
+char Wolf::GetSymbol() const {
+	return WOLF_SYMBOL;
 }
 
 std::unique_ptr<Animal> Wolf::Breed() const {

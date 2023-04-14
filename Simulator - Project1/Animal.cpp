@@ -9,7 +9,7 @@ void Animal::Action() {
 	alive_time++;
 }
 
-void Animal::Collision(std::unique_ptr<Organism>& defender) {
+void Animal::Collision(Organism* defender) {
 	if (!defender->IsAlive()) return;
 
 	if (typeid(*defender) == typeid(*this)) {
@@ -18,7 +18,7 @@ void Animal::Collision(std::unique_ptr<Organism>& defender) {
 		// Create a new instance of the same type as the current object
 		std::unique_ptr<Animal> new_animal = Breed();
 		if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
-			new_animal->Draw();
+			//new_animal->Draw();
 			world.AddNewOrganism(std::move(new_animal));
 		}
 	}
@@ -54,7 +54,7 @@ void Animal::RandomMove() {
 	world.IncrementSlot(GetPosition());
 }
 
-int Animal::FightResult(std::unique_ptr<Organism>& victim) {
+int Animal::FightResult(Organism*& victim) {
 	return victim->DefenseResult(*this);
 }
 

@@ -6,8 +6,8 @@ private:
 	bool power_activated;
 public:
 	void Action() override;
-	void Collision(std::unique_ptr<Organism>& collided) override;
-	void Draw() override;
+	void Collision(Organism* collided) override;
+	void Draw() const override;
 	std::unique_ptr<Animal> Breed() const override;
 
 	int DefenseResult(Organism& attacker) override;
@@ -22,5 +22,7 @@ public:
 	const bool& PowerActivated() const;
 
 	void Die() override;
+
+	char GetSymbol() const override;
 };
 

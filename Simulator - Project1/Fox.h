@@ -2,7 +2,7 @@
 #include "Animal.h"
 class Fox : public Animal {
 public:
-	void Draw() override;
+	void Draw() const override;
 	std::unique_ptr<Animal> Breed() const override;
 	void Action() override;
 
@@ -11,5 +11,7 @@ public:
 
 	void FoxMove();
 	bool FoxSafeAtSpot(Position spot);
+
+	char GetSymbol() const override;
 };
 

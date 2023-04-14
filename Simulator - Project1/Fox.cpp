@@ -3,7 +3,7 @@
 #include "Libraries.h"
 
 
-void Fox::Draw() {
+void Fox::Draw() const {
 	if (!IsAlive()) {
 		return;
 	}
@@ -60,8 +60,8 @@ bool Fox::FoxSafeAtSpot(Position spot) {
 	if (world.IsEmpty(spot)) {
 		return true;
 	}
-	const std::unique_ptr<Organism>& adjacent = world.GetOrganismAtPos(spot);
-	if (dynamic_cast<Fox*>(adjacent.get())) {
+	const Organism* adjacent = world.GetOrganismAtPos(spot);
+	if (dynamic_cast<const Fox*>(adjacent)) {
 		return true;
 	}
 	if (GetStrength() > adjacent->GetStrength()) {
@@ -74,4 +74,8 @@ bool Fox::FoxSafeAtSpot(Position spot) {
 		return true;
 	}
 	else return false;
+}
+
+char Fox::GetSymbol() const {
+	return FOX_SYMBOL;
 }

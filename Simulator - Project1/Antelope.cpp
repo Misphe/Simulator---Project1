@@ -3,7 +3,7 @@
 #include "Libraries.h"
 
 
-void Antelope::Draw() {
+void Antelope::Draw() const {
 	if (!IsAlive()) {
 		return;
 	}
@@ -30,19 +30,19 @@ void Antelope::Action() {
 	alive_time++;
 }
 
-void Antelope::Collision(std::unique_ptr<Organism>& defender) {
+void Antelope::Collision(Organism* defender) {
 	if (typeid(*defender) == typeid(*this)) {
 		GoBack();
 		std::unique_ptr<Animal> new_animal = Breed();
 		if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
-			new_animal->Draw();
+			//new_animal->Draw();
 			world.AddNewOrganism(std::move(new_animal));
 		}
 		return;
 	}
 	if (AntelopeEscaped()) {
-		this->Draw();
-		defender->Draw();
+		//this->Draw();
+		//defender->Draw();
 		return;
 	}
 	Animal::Collision(defender);
@@ -51,8 +51,8 @@ void Antelope::Collision(std::unique_ptr<Organism>& defender) {
 int Antelope::DefenseResult(Organism& attacker)
 {
 	if (AntelopeEscaped()) {
-		this->Draw();
-		attacker.Draw();
+		//this->Draw();
+		//attacker.Draw();
 		return DEFENDER_RUNS_AWAY;
 	}
 	return Animal::DefenseResult(attacker);
@@ -73,7 +73,7 @@ std::unique_ptr<Animal> Antelope::Breed() const {
 }
 
 bool Antelope::AntelopeEscaped() {
-	if (!(rand() % 10)) {
+	if (rand() % 2) {
 		return false;
 	}
 	Position adjacent[] = { { 1, 0 }, { -1,0 }, { 0,1 }, { 0,-1 } };
@@ -87,10 +87,11 @@ bool Antelope::AntelopeEscaped() {
 				tested[random] = true;
 				tmp = { GetX() + adjacent[random].x, GetY() + adjacent[random].y };
 				if (tmp.InsideWorld(world.GetSizeX(), world.GetSizeY()) && world.IsEmpty(tmp)) {
-					//UpdatePrevPosition();
 					world.DecrementSlot(GetPosition());
 					SetPosition(tmp);
 					world.IncrementSlot(GetPosition());
+					world.UpdateOrganismSlot(*this);
+
 					return true;
 				}
 				break;
@@ -98,4 +99,8 @@ bool Antelope::AntelopeEscaped() {
 		}
 	}
 	return false;
+}
+
+char Antelope::GetSymbol() const {
+	return ANTELOPE_SYMBOL;
 }

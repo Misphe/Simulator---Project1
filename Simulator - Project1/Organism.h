@@ -38,6 +38,7 @@ public:
 	const Position& GetPosition() const;
 	const bool& IsAlive() const;
 	const Position& GetPrevPosition() const;
+	virtual char GetSymbol() const = 0;
 
 	void MoveX(int change);
 	void MoveY(int change);
@@ -51,8 +52,8 @@ public:
 	void SetInitiative(int new_initiative);
 
 	virtual void Action() = 0;
-	virtual void Collision(std::unique_ptr<Organism>& defender) = 0;
-	virtual void Draw() = 0;
+	virtual void Collision(Organism* defender) = 0;
+	virtual void Draw() const = 0;
 	virtual void Die();
 	virtual int DefenseResult(Organism& attacker) = 0;
 
