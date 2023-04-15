@@ -16,17 +16,21 @@ void Wolf::Draw() const {
 }
 
 Wolf::Wolf(World& ref_world) : Animal(ref_world) {
-	SetStrength(9);
-	SetInitiative(5);
+	SetStrength(WOLF_STRENGTH);
+	SetInitiative(WOLF_INITIATIVE);
 }
 
 Wolf::Wolf(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
-	SetStrength(9);
-	SetInitiative(5);
+	SetStrength(WOLF_STRENGTH);
+	SetInitiative(WOLF_INITIATIVE);
 }
 
 char Wolf::GetSymbol() const {
 	return WOLF_SYMBOL;
+}
+
+std::string Wolf::GetName() const {
+	return "Wolf";
 }
 
 std::unique_ptr<Animal> Wolf::Breed() const {

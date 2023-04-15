@@ -6,22 +6,23 @@ void Human::Action() {
 	// unlinking ( see Animal::Action() )
 	world.DeleteOrganismFromSlot(*this);
 	UpdatePrevPosition();
+	int boost = CurrentBoost();
 
 	switch (move) {
 		case UP_ARROW:
-			MoveY(-1);
+			MoveY(-1 - boost);
 			break;
 
 		case DOWN_ARROW:
-			MoveY(1);
+			MoveY(1 + boost);
 			break;
 
 		case LEFT_ARROW:
-			MoveX(-1);
+			MoveX(-1 - boost);
 			break;
 
 		case RIGHT_ARROW:
-			MoveX(1);
+			MoveX(1 + boost);
 			break;
 	};
 
@@ -31,6 +32,7 @@ void Human::Action() {
 }
 
 void Human::Collision() {
+
 	// depends on his power and whether it's activated or not
 	switch (power_activated) {
 		case false:
@@ -39,10 +41,10 @@ void Human::Collision() {
 			break;
 		case true:
 
-			// nothing yet
-			world.SetOrganismToSlot(*this);
+			Animal::Collision();
 			break;
 	}
+	DecrementCooldown();
 }
 
 void Human::Draw() const {
@@ -58,8 +60,9 @@ void Human::Draw() const {
 }
 
 Human::Human(World& ref_world) : Animal(ref_world), power_activated(false) {
-	SetStrength(5);
-	SetInitiative(4);
+	SetStrength(HUMAN_STRENGTH);
+	SetInitiative(HUMAN_INITIATIVE);
+	cooldown = 0;
 	move = '\0';
 }
 
@@ -86,6 +89,33 @@ const char& Human::GetInput() const {
 const bool& Human::PowerActivated() const
 {
 	return power_activated;
+}
+
+const int& Human::GetCooldown() {
+	return cooldown;
+}
+
+void Human::SetCooldown() {
+	cooldown = MAX_COOLDOWN;
+}
+
+void Human::DecrementCooldown() {
+	if (cooldown > 0) {
+		cooldown--;
+	}
+	if (cooldown == END_OF_POWER) {
+		FlickPowerState();
+	}
+}
+
+const int Human::CurrentBoost() {
+	if (!PowerActivated()) return 0;
+
+	if (GetCooldown() > POWER_WORSE_STATE) {
+		return 1;
+	}
+	else if (GetCooldown() > END_OF_POWER) return rand() % 2;
+	else return 0;
 }
 
 void Human::TakeInput() {
@@ -115,4 +145,8 @@ void Human::Die() {
 
 char Human::GetSymbol() const {
 	return HUMAN_SYMBOL;
+}
+
+std::string Human::GetName() const {
+	return "Human";
 }

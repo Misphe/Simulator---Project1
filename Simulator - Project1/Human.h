@@ -4,6 +4,7 @@ class Human : public Animal {
 private:
 	char move;
 	bool power_activated;
+	int cooldown;
 public:
 	void Action() override;
 	void Collision() override;
@@ -20,9 +21,15 @@ public:
 
 	const char& GetInput() const;
 	const bool& PowerActivated() const;
+	const int& GetCooldown();
+	void SetCooldown();
+	void DecrementCooldown();
+
+	const int CurrentBoost();
 
 	void Die() override;
 
 	char GetSymbol() const override;
+	std::string GetName() const override;
 };
 
