@@ -14,8 +14,13 @@ void Fox::Draw() const {
 }
 
 void Fox::Action() {
+	// unlinking
+	world.DeleteOrganismFromSlot(*this);
 	UpdatePrevPosition();
+
+	// smart type of movement -> Fox never goes where he loses
 	FoxMove();
+
 	alive_time++;
 	world.DecrementSlot(GetPrevPosition());
 	world.IncrementSlot(GetPosition());
@@ -57,11 +62,11 @@ void Fox::FoxMove() {
 }
 
 bool Fox::FoxSafeAtSpot(Position spot) {
-	if (world.IsEmpty(spot)) {
+	Organism* adjacent = world.GetOrganismAtPos(spot);
+	if (adjacent == nullptr) {
 		return true;
 	}
-	const Organism* adjacent = world.GetOrganismAtPos(spot);
-	if (dynamic_cast<const Fox*>(adjacent)) {
+	if (dynamic_cast<Fox*>(adjacent)) {
 		return true;
 	}
 	if (GetStrength() > adjacent->GetStrength()) {

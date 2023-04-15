@@ -4,40 +4,57 @@
 #include <memory>
 
 void Animal::Action() {
+	// starts with unlinking current animal from its position in the map
+	world.DeleteOrganismFromSlot(*this);
+
 	UpdatePrevPosition();
 	RandomMove();
 	alive_time++;
 }
 
-void Animal::Collision(Organism* defender) {
-	if (!defender->IsAlive()) return;
+void Animal::Collision() {
+	Organism* defender = world.CheckForCollision(*this);
+	if (defender != nullptr) {
+		if (!defender->IsAlive()) return;
 
-	if (typeid(*defender) == typeid(*this)) {
 		// breeding case
-		GoBack();
-		// Create a new instance of the same type as the current object
-		std::unique_ptr<Animal> new_animal = Breed();
-		if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
-			//new_animal->Draw();
-			world.AddNewOrganism(std::move(new_animal));
+		if (typeid(*defender) == typeid(*this)) {
+
+			// Both animals stay in their places
+			GoBack();
+
+			std::unique_ptr<Animal> new_animal = Breed();
+			if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
+				
+				// if no space for child -> nothing happens
+				world.AddNewOrganism(std::move(new_animal));
+			}
+		}
+		else {
+			int result = FightResult(defender);
+			switch (result) {
+			case ATTACKER_WINS:
+
+				defender->Die();
+				world.DeleteOrganismFromSlot(*defender);
+				break;
+			case DEFENDER_WINS:
+
+				// as attacker is unlinked from the field ( see Action() ) it doesnt 
+				// have to be removed like in the previous case
+				this->Die();
+				break;
+			case ATTACKER_RETREATS:
+				GoBack();
+				break;
+			case DEFENDER_RUNS_AWAY:
+				break;
+			};
 		}
 	}
-	else {
-		int result = FightResult(defender);
-		switch (result) {
-		case ATTACKER_WINS:
-			defender->Die();
-			break;
-		case DEFENDER_WINS:
-			this->Die();
-			break;
-		case ATTACKER_RETREATS:
-			GoBack();
-			break;
-		case DEFENDER_RUNS_AWAY:
-			break;
-		};
-	}
+
+	// After a turn of every Animal, if it is still alive -> its position is saved in the map
+	world.SetOrganismToSlot(*this);
 }
 
 void Animal::RandomMove() {
@@ -76,6 +93,7 @@ int Animal::DefenseResult(Organism& attacker) {
 	}
 }
 
+// returns true if found space for the child
 bool Animal::SetChildsPosition(const Position& parent1_pos, const Position& parent2_pos) {
 	Position adjacent[] = { { 1, 0 }, { -1,0 }, { 0,1 }, { 0,-1 } };
 	bool tested[] = { false,false,false,false };
@@ -115,4 +133,26 @@ bool Animal::SetChildsPosition(const Position& parent1_pos, const Position& pare
 		}
 	}
 	return false;
+}
+
+const Position& Animal::GetPrevPosition() const {
+	return prev_position;
+}
+
+void Animal::UpdatePrevPosition() {
+	prev_position = position;
+}
+
+void Animal::GoBack() {
+	world.DecrementSlot(GetPosition());
+	SetPosition(GetPrevPosition());
+	world.IncrementSlot(GetPosition());
+}
+
+Animal::Animal(World& ref_world, int set_x, int set_y) : Organism(ref_world, set_x, set_y) {
+	prev_position = position;
+}
+
+Animal::Animal(World& ref_world) : Organism(ref_world) {
+	prev_position = position;
 }

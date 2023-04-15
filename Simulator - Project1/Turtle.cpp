@@ -14,8 +14,11 @@ void Turtle::Draw() const {
 }
 
 void Turtle::Action() {
-	// if rand() returns 0 -> animal moves (that's 25% chance)
+	// unlinking 
+	world.DeleteOrganismFromSlot(*this);
 	UpdatePrevPosition();
+
+	// if rand() returns 0 -> animal moves (that's 25% chance)
 	if (!(rand() % 4)) {
 		Animal::Action();
 		return;

@@ -6,7 +6,7 @@ private:
 	bool power_activated;
 public:
 	void Action() override;
-	void Collision(Organism* collided) override;
+	void Collision() override;
 	void Draw() const override;
 	std::unique_ptr<Animal> Breed() const override;
 

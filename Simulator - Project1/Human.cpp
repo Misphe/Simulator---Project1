@@ -3,8 +3,10 @@
 #include "World.h"
 
 void Human::Action() {
+	// unlinking ( see Animal::Action() )
+	world.DeleteOrganismFromSlot(*this);
 	UpdatePrevPosition();
-	world.UpdateMapSlotsView();
+
 	switch (move) {
 		case UP_ARROW:
 			MoveY(-1);
@@ -28,13 +30,17 @@ void Human::Action() {
 	world.IncrementSlot(GetPosition());
 }
 
-void Human::Collision(Organism* collided) {
+void Human::Collision() {
 	// depends on his power and whether it's activated or not
 	switch (power_activated) {
 		case false:
-			Animal::Collision(collided);
+
+			Animal::Collision();
 			break;
 		case true:
+
+			// nothing yet
+			world.SetOrganismToSlot(*this);
 			break;
 	}
 }
