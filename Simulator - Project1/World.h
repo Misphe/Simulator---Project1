@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include "Libraries.h"
 #include "Organism.h"
 #include "Human.h"
 #include "Sheep.h"
@@ -28,6 +29,7 @@ private:
 	Organism*** organisms_slots;
 	Human* player;
 
+	std::string logs[LOG_LENGTH];
 	HANDLE console;
 
 	void SortOrganisms();
@@ -70,6 +72,10 @@ public:
 	void DeleteOrganismFromSlot(Organism& organism);
 	void UpdateAnimalSlot(Animal& organism);
 	void SetColor(const int& color);
+
+	void PushNewLog(std::string&& new_log);
+	std::string CreateLog(Organism& attacker, Organism& defender, int message);
+	std::string CreateBreedLog(Organism& new_organism);
 
 	~World();
 };

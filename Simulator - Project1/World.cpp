@@ -1,10 +1,11 @@
 #include "World.h"
 #include "Libraries.h"
 #include <algorithm>
-#include <ctime>
-
 
 World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_size_y) {
+	for (int i = 0; i < LOG_LENGTH; i++) {
+		logs[i] = "";
+	}
 	console = GetStdHandle(STD_OUTPUT_HANDLE);
 	map_slots = new int* [size_x];
 	organisms_slots = new Organism**[size_x];
@@ -18,43 +19,40 @@ World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_si
 	}
 	AddNewOrganism(std::make_unique<Human>(*this));
 	SetPlayer();
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < WOLF_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Wolf>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < SHEEP_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Sheep>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < FOX_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Fox>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < TURTLE_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Turtle>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < ANTELOPE_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Antelope>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < GRASS_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Grass>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < DANDELION_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Dandelion>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < GUARANA_COUNT; i++) {
 		AddNewOrganism(std::make_unique<Guarana>(*this));
 	}
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < WOLFBERRIES_COUNT; i++) {
 		AddNewOrganism(std::make_unique<WolfBerries>(*this));
 	}
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < PINEBORSCHT_COUNT; i++) {
 		AddNewOrganism(std::make_unique<PineBorscht>(*this));
 	}
 }
 
 void World::IncrementSlot(const Position& position) {
 	map_slots[position.x][position.y]++;
-	if (map_slots[position.x][position.y] > 2) {
-		int x = 0;
-	}
 }
 
 void World::DecrementSlot(const Position& position) {
@@ -72,7 +70,6 @@ const int& World::GetSizeY() const {
 void World::Start() {
 
 	SortOrganisms();
-	DrawFrame();
 	DrawWorld();
 	int input;
 	while (true) {
@@ -137,7 +134,19 @@ void World::DrawWorld() {
 	for (int i = 1; i <= size_x + X_FRAME; i++) {
 		printf("  ");
 	}
-	UpdateMapSlotsView();
+	//UpdateMapSlotsView();
+
+	SetColor(SET_BG_GREEN);
+	for (int i = 0; i < LOG_LENGTH; i++) {
+		MoveCursor(LOG_X, LOG_Y + LOG_LENGTH - i);
+		std::cout << logs[i];
+		for (int j = 0; j < LOG_LINE_LENGTH - logs[i].length(); j++) {
+			printf(" ");
+		}
+	}
+	SetColor(SET_BG_LIGHTBLUE);
+
+
 
 	// Make cursor invisible
 	std::cout << "\033[?25l";
@@ -184,47 +193,6 @@ void World::DeleteOrganismFromSlot(Organism& organism) {
 
 void World::MoveCursor(int x, int y) {
 	std::cout << "\033[" << (y + 1) << ";" << (x + 1) << "H";
-}
-
-// unused
-void World::Clear()
-{
-	// Draw top side of the frame 
-	/*for (std::unique_ptr<Organism>& organism : organisms) {
-		MoveCursor(organism->GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism->GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
-		_putch(' ');
-	}*/
-}
-
-
-// unused
-void World::DrawFrame() {
-	return;
-	int size_x = GetSizeX();
-	int size_y = GetSizeY();
-	Clear();
-	MoveCursor(BOARD_POS_X, BOARD_POS_Y);
-
-	// Draw top side of the frame 
-	for (int i = 1; i <= size_x + X_FRAME; i++) {
-		_putch('#');
-		_putch(' ');
-	}
-
-	// Draw left and right side of the frame
-	for (int i = 1; i < size_y + 2 * Y_FRAME; i++) {
-		MoveCursor(BOARD_POS_X, i + BOARD_POS_Y);
-		_putch('#');
-		MoveCursor(size_x * X_SCALING + X_FRAME + BOARD_POS_X, i + BOARD_POS_Y);
-		_putch('#');
-	}
-
-	// Draw bottom side of the frame
-	MoveCursor(BOARD_POS_X, size_y + Y_FRAME + BOARD_POS_Y);
-	for (int i = 1; i <= size_x + X_FRAME; i++) {
-		_putch('#');
-		_putch(' ');
-	}
 }
 
 void World::SortOrganisms() {
@@ -277,50 +245,6 @@ int World::GetCountOnSlot(const Position& slot) const {
 	return map_slots[slot.x][slot.y];
 }
 
-// unused
-void World::UpdateOneOrganism(std::unique_ptr<Organism>& organism) {
-	return;
-	/*if (organism->GetPosition() == organism->GetPrevPosition()) {
-		return;
-	}
-	if (IsEmpty(organism->GetPrevPosition())) {
-		MoveCursor(organism->GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism->GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
-		_putch(' ');
-	}
-	if (!organism->IsAlive()) {
-		return;
-	}
-	organism->Draw();
-	std::cout << "\033[?25l";*/
-}
-
-// unused
-void World::UpdateOneOrganism(Organism& organism) {
-	return;
-	/*if (organism.GetPosition() == organism.GetPrevPosition()) {
-		return;
-	}
-	MoveCursor(organism.GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism.GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
-	_putch(' ');
-	if (!organism.IsAlive()) {
-		return;
-	}
-	organism.Draw();
-	std::cout << "\033[?25l";*/
-}
-
-// unused
-void World::UpdateOneOrganism(std::unique_ptr<Animal>& organism) {
-	return;
-	/*if (organism->GetPosition() == organism->GetPrevPosition() || !organism->IsAlive()) {
-		return;
-	}
-	MoveCursor(organism->GetPrevPosition().x * X_SCALING + BOARD_POS_X + X_FRAME, organism->GetPrevPosition().y + BOARD_POS_Y + Y_FRAME);
-	_putch(' ');
-	organism->Draw();
-	std::cout << "\033[?25l";*/
-}
-
 void World::SetPlayer() {
 	for (auto& organism : organisms) {
 		if (dynamic_cast<Human*>(organism.get())) {
@@ -352,8 +276,9 @@ int World::SetInput() {
 				success = true;
 				break;
 			case SUPERPOWER:
-				if (!player->PowerActivated()) {
+				if (!player->PowerActivated() && player->GetCooldown() == 0) {
 					player->FlickPowerState();
+					player->SetCooldown();
 				}
 				break;
 			};
@@ -380,4 +305,34 @@ World::~World() {
 	}
 	delete[] map_slots;
 	delete[] organisms_slots;
+}
+
+void World::PushNewLog(std::string&& new_log) {
+	for (int i = LOG_LENGTH - 1; i >= 1; i--) {
+		logs[i] = logs[i - 1];
+	}
+	logs[0] = std::move(new_log);
+}
+
+std::string World::CreateLog(Organism& attacker, Organism& defender, int message) {
+	std::string attacker_info = attacker.GetName() + "(" + std::to_string(attacker.GetX()) + "," + std::to_string(attacker.GetY()) + ")";
+	std::string defender_info = defender.GetName() + "(" + std::to_string(defender.GetX()) + "," + std::to_string(defender.GetY()) + ")";
+	switch (message) {
+	case ATTACKER_WINS:
+		return attacker_info + " killed " + defender_info;
+	case DEFENDER_WINS:
+		return defender_info + " killed " + attacker_info;
+	case DEFENDER_RUNS_AWAY:
+		return defender_info + " ran away from " + attacker_info;
+	case ATTACKER_RETREATS:
+		return attacker_info + " stepped back from " + defender_info;
+	case BOTH_DIED:
+		return attacker_info + " and " + defender_info + "died";
+	case ATTACKER_EATS:
+		return attacker_info + " eats " + defender_info;
+	};
+}
+
+std::string World::CreateBreedLog(Organism& new_organism) {
+	return new_organism.GetName() + " appeared at (" + std::to_string(new_organism.GetX()) + "," + std::to_string(new_organism.GetY()) + ")";
 }
