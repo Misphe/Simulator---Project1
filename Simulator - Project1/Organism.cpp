@@ -96,8 +96,8 @@ Organism::Organism(World& ref_world) : world(ref_world), alive_time(1) {
 	int set_x = rand() % world.GetSizeX();
 	int set_y = rand() % world.GetSizeY();
 	while (!world.IsEmpty({set_x, set_y})) {
-		int set_x = rand() % world.GetSizeX();
-		int set_y = rand() % world.GetSizeY();
+		set_x = rand() % world.GetSizeX();
+		set_y = rand() % world.GetSizeY();
 	}
 	SetX(set_x);
 	SetY(set_y);

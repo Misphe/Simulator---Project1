@@ -46,17 +46,19 @@ void Human::Collision() {
 }
 
 void Human::Draw() const {
-	if (!IsAlive()) {
-		return;
+	world.SetColor(SET_BG_GREEN);
+	if (DEBUG_MODE) {
+		printf("%c", GetSymbol());
+		printf(" ");
 	}
-	int x = (GetX() * X_SCALING) + 2;
-	int y = GetY() + 1;
-	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
-	_putch(HUMAN_SYMBOL);
+	else {
+		printf("  ");
+	}
+	RESET_COLOR;
 }
 
 Human::Human(World& ref_world) : Animal(ref_world), power_activated(false) {
-	SetStrength(10);
+	SetStrength(5);
 	SetInitiative(4);
 	move = '\0';
 }

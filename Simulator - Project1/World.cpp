@@ -2,9 +2,10 @@
 #include "Libraries.h"
 #include <algorithm>
 #include <ctime>
-#include "Grass.h"
+
 
 World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_size_y) {
+	console = GetStdHandle(STD_OUTPUT_HANDLE);
 	map_slots = new int* [size_x];
 	organisms_slots = new Organism**[size_x];
 	for (int i = 0; i < size_x; i++) {
@@ -23,17 +24,29 @@ World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_si
 	for (int i = 0; i < 2; i++) {
 		AddNewOrganism(std::make_unique<Sheep>(*this));
 	}
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 2; i++) {
 		AddNewOrganism(std::make_unique<Fox>(*this));
 	}
 	for (int i = 0; i < 2; i++) {
 		AddNewOrganism(std::make_unique<Turtle>(*this));
 	}
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 2; i++) {
 		AddNewOrganism(std::make_unique<Antelope>(*this));
 	}
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 2; i++) {
 		AddNewOrganism(std::make_unique<Grass>(*this));
+	}
+	for (int i = 0; i < 2; i++) {
+		AddNewOrganism(std::make_unique<Dandelion>(*this));
+	}
+	for (int i = 0; i < 2; i++) {
+		AddNewOrganism(std::make_unique<Guarana>(*this));
+	}
+	for (int i = 0; i < 2; i++) {
+		AddNewOrganism(std::make_unique<WolfBerries>(*this));
+	}
+	for (int i = 0; i < 8; i++) {
+		AddNewOrganism(std::make_unique<PineBorscht>(*this));
 	}
 }
 
@@ -61,16 +74,15 @@ void World::Start() {
 	SortOrganisms();
 	DrawFrame();
 	DrawWorld();
+	int input;
 	while (true) {
-		if (player != nullptr) {
-			player->TakeInput();
+		input = SetInput();
+		switch (input) {
+		case ESCAPE:
+			return;
+			break;
 		}
-		else {
-			// confirm turn
-			if (_getch() == ARROW_CLICK) {
-				_getch();
-			}
-		}
+
 		ExecuteTurn();
 	}
 }
@@ -82,12 +94,8 @@ void World::ExecuteTurn() {
 
 		organisms[i]->Action();
 		organisms[i]->Collision();
-
-		if (!(GetAsyncKeyState(VK_SPACE) & 0x8000) && SLOW_MODE) {
-			Sleep(250);
-		}
-		UpdateOneOrganism(organisms[i]);
 		SetOrganismToSlot(*organisms[i].get());
+
 	}
 
 	UpdateMapSlotsView();
@@ -101,19 +109,34 @@ void World::DrawWorld() {
 		//Clear();
 	}
 
+
+
+	MoveCursor(BOARD_POS_X, BOARD_POS_Y);
+	SetColor(SET_BG_LIGHTBLUE);
+	for (int i = 1; i <= size_x + X_FRAME; i++) {
+		printf("  ");
+	}
 	for (int i = 0; i < size_y; i++) {
-		MoveCursor(X_FRAME + BOARD_POS_X, BOARD_POS_Y + Y_FRAME + i);
+
+		MoveCursor(BOARD_POS_X, BOARD_POS_Y + Y_FRAME + i);
+		SetColor(SET_BG_LIGHTBLUE);
+		printf("  ");
 		for (int j = 0; j < size_x; j++) {
 			if (organisms_slots[j][i] == nullptr) {
-				std::cout << " ";
-				std::cout << " ";
+				SetColor(SET_BG_LIGHTYELLOW);
+				printf("  ");
 			}
 			else {
-				std::cout << organisms_slots[j][i]->GetSymbol() << " ";
+				organisms_slots[j][i]->Draw();
 			}
 		}
+		SetColor(SET_BG_LIGHTBLUE);
+		printf("  ");
 	}
-
+	MoveCursor(BOARD_POS_X, size_y + Y_FRAME + BOARD_POS_Y);
+	for (int i = 1; i <= size_x + X_FRAME; i++) {
+		printf("  ");
+	}
 	UpdateMapSlotsView();
 
 	// Make cursor invisible
@@ -122,6 +145,8 @@ void World::DrawWorld() {
 
 // helping tool
 void World::UpdateMapSlotsView() {
+	return;
+	SET_BG_BLACK;
 	for (int i = 0; i < size_y; i++) {
 		MoveCursor(size_x * 2 + 10, 4 + i);
 		for (int j = 0; j < size_x; j++) {
@@ -149,6 +174,10 @@ void World::UpdateAnimalSlot(Animal& organism) {
 	}
 }
 
+void World::SetColor(const int& color) {
+	SetConsoleTextAttribute(console, color);
+}
+
 void World::DeleteOrganismFromSlot(Organism& organism) {
 	organisms_slots[organism.GetX()][organism.GetY()] = nullptr;
 }
@@ -157,6 +186,7 @@ void World::MoveCursor(int x, int y) {
 	std::cout << "\033[" << (y + 1) << ";" << (x + 1) << "H";
 }
 
+// unused
 void World::Clear()
 {
 	// Draw top side of the frame 
@@ -166,7 +196,10 @@ void World::Clear()
 	}*/
 }
 
+
+// unused
 void World::DrawFrame() {
+	return;
 	int size_x = GetSizeX();
 	int size_y = GetSizeY();
 	Clear();
@@ -207,14 +240,6 @@ void World::SortOrganisms() {
 }
 
 Organism* World::CheckForCollision(const Organism& current) {
-	/*for (auto& organism : organisms) {
-		if (current->GetPosition() == organism->GetPosition() && &(*current) != &(*organism) && organism->IsAlive()) {
-			return organism;
-		}
-	}
-	std::unique_ptr<Organism> null(nullptr);
-	return null;*/
-
 	return organisms_slots[current.GetX()][current.GetY()];
 }
 
@@ -252,6 +277,7 @@ int World::GetCountOnSlot(const Position& slot) const {
 	return map_slots[slot.x][slot.y];
 }
 
+// unused
 void World::UpdateOneOrganism(std::unique_ptr<Organism>& organism) {
 	return;
 	/*if (organism->GetPosition() == organism->GetPrevPosition()) {
@@ -268,6 +294,7 @@ void World::UpdateOneOrganism(std::unique_ptr<Organism>& organism) {
 	std::cout << "\033[?25l";*/
 }
 
+// unused
 void World::UpdateOneOrganism(Organism& organism) {
 	return;
 	/*if (organism.GetPosition() == organism.GetPrevPosition()) {
@@ -282,6 +309,7 @@ void World::UpdateOneOrganism(Organism& organism) {
 	std::cout << "\033[?25l";*/
 }
 
+// unused
 void World::UpdateOneOrganism(std::unique_ptr<Animal>& organism) {
 	return;
 	/*if (organism->GetPosition() == organism->GetPrevPosition() || !organism->IsAlive()) {
@@ -305,4 +333,51 @@ void World::SetPlayer() {
 
 void World::AbortPlayer() {
 	player = nullptr;
+}
+
+int World::SetInput() {
+	bool success = false;
+	int input;
+	while (!success) {
+		input = _getch();
+		switch (player != nullptr) {
+		case true:
+			switch (input) {
+			case ARROW_CLICK:
+				input = _getch();
+				player->SetMove(input);
+				success = true;
+				break;
+			case ESCAPE:
+				success = true;
+				break;
+			case SUPERPOWER:
+				if (!player->PowerActivated()) {
+					player->FlickPowerState();
+				}
+				break;
+			};
+		case false:
+			switch (input) {
+			case ARROW_CLICK:
+				input = _getch();
+				success = true;
+				break;
+			case ESCAPE:
+				success = true;
+				break;
+			};
+		};
+	}
+	return input;
+}
+
+World::~World() {
+	for (int i = 0; i < size_x; i++) {
+		delete[] organisms_slots[i];
+		delete[] map_slots[i];
+
+	}
+	delete[] map_slots;
+	delete[] organisms_slots;
 }

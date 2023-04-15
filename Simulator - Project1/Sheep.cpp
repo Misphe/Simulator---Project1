@@ -4,13 +4,15 @@
 
 
 void Sheep::Draw() const  {
-	if (!IsAlive()) {
-		return;
+	world.SetColor(SET_BG_WHITE);
+	if (DEBUG_MODE) {
+		printf("%c", GetSymbol());
+		printf(" ");
 	}
-	int x = (GetX() * X_SCALING) + 2;
-	int y = GetY() + 1;
-	World::MoveCursor(x + BOARD_POS_X, y + BOARD_POS_Y);
-	_putch(SHEEP_SYMBOL);
+	else {
+		printf("  ");
+	}
+	RESET_COLOR;
 }
 
 Sheep::Sheep(World& ref_world) : Animal(ref_world) {

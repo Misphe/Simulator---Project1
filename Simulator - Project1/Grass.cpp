@@ -1,8 +1,17 @@
 #include "Grass.h"
 #include "Libraries.h"
+#include "World.h"
 
 void Grass::Draw() const {
-	return;
+	world.SetColor(SET_BG_LIGHTGREEN);
+	if (DEBUG_MODE) {
+		printf("%c", GetSymbol());
+		printf(" ");
+	}
+	else {
+		printf("  ");
+	}
+	RESET_COLOR;
 }
 
 std::unique_ptr<Plant> Grass::Spread() const {

@@ -9,6 +9,12 @@
 #include "Fox.h"
 #include "Turtle.h"
 #include "Antelope.h"
+#include "Grass.h"
+#include "Dandelion.h"
+#include "Guarana.h"
+#include "WolfBerries.h"
+#include "PineBorscht.h"
+#include <windows.h>
 
 // forward declaration to avoid circular dependencies
 class Organism;
@@ -21,6 +27,8 @@ private:
 	int** map_slots;
 	Organism*** organisms_slots;
 	Human* player;
+
+	HANDLE console;
 
 	void SortOrganisms();
 
@@ -39,6 +47,7 @@ public:
 	const int& GetSizeX() const;
 	const int& GetSizeY() const;
 
+	int SetInput();
 	void SetPlayer();
 	void AbortPlayer();
 	World(int set_size_x, int set_size_y);
@@ -60,5 +69,8 @@ public:
 	void SetOrganismToSlot(Organism& organism);
 	void DeleteOrganismFromSlot(Organism& organism);
 	void UpdateAnimalSlot(Animal& organism);
+	void SetColor(const int& color);
+
+	~World();
 };
 

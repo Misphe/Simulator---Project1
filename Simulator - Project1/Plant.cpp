@@ -4,7 +4,7 @@
 
 void Plant::Action() {
 	// 25% to continue
-	if (rand() % 4) {
+	if (rand() % 20) {
 		return;
 	}
 	
