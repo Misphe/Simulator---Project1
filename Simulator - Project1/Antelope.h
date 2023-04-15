@@ -9,7 +9,7 @@ public:
 	Antelope(World& ref_world, int set_x, int set_y);
 
 	void Action() override;
-	void Collision(Organism* defender) override;
+	void Collision() override;
 	int DefenseResult(Organism& attacker) override;
 
 	bool AntelopeEscaped();

@@ -14,8 +14,11 @@ void Antelope::Draw() const {
 }
 
 void Antelope::Action() {
-	// if rand() returns 0 -> animal moves (that's 25% chance)
+
+	world.DeleteOrganismFromSlot(*this);
 	UpdatePrevPosition();
+
+	// the while statement stands for not allowing moving into walls
 	do {
 		if (rand() % 2) {
 			rand() % 2 ? this->MoveX(2) : this->MoveX(-2);
@@ -30,31 +33,42 @@ void Antelope::Action() {
 	alive_time++;
 }
 
-void Antelope::Collision(Organism* defender) {
-	if (typeid(*defender) == typeid(*this)) {
-		GoBack();
-		std::unique_ptr<Animal> new_animal = Breed();
-		if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
-			//new_animal->Draw();
-			world.AddNewOrganism(std::move(new_animal));
+void Antelope::Collision() {
+	Organism* defender = world.CheckForCollision(*this);
+	if (defender != nullptr) {
+		if (typeid(*defender) == typeid(*this)) {
+			GoBack();
+			std::unique_ptr<Animal> new_animal = Breed();
+			if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
+				//new_animal->Draw();
+				world.AddNewOrganism(std::move(new_animal));
+			}
+			return;
 		}
-		return;
+		if (AntelopeEscaped()) {
+			// do nothing else
+			return;
+		}
+		Animal::Collision();
 	}
-	if (AntelopeEscaped()) {
-		//this->Draw();
-		//defender->Draw();
-		return;
-	}
-	Animal::Collision(defender);
+	world.SetOrganismToSlot(*this);
 }
 
 int Antelope::DefenseResult(Organism& attacker)
 {
+	// explanation for that in if statement
+	UpdatePrevPosition();
 	if (AntelopeEscaped()) {
-		//this->Draw();
-		//attacker.Draw();
+
+		// we do it to ensure that we are changing pointer to nullptr only for slot that is under
+		// the current antelope. If we didnt do it, some bugs could appear.
+		// e.g. antelope moves from (2,0) to (4,0). Fox moves to (2,0), Wolf kills antelope -> Antelope could po-
+		// tentially delete pointer to fox if it used with PrevPos at (2,0)
+		world.UpdateAnimalSlot(*this);
+
 		return DEFENDER_RUNS_AWAY;
 	}
+
 	return Animal::DefenseResult(attacker);
 }
 
@@ -76,28 +90,16 @@ bool Antelope::AntelopeEscaped() {
 	if (rand() % 2) {
 		return false;
 	}
-	Position adjacent[] = { { 1, 0 }, { -1,0 }, { 0,1 }, { 0,-1 } };
-	bool tested[] = { false,false,false,false };
-	int random;
-	Position tmp;
-	for (int i = 0; i < 4; i++) {
-		while (true) {
-			random = rand() % 4;
-			if (tested[random] != true) {
-				tested[random] = true;
-				tmp = { GetX() + adjacent[random].x, GetY() + adjacent[random].y };
-				if (tmp.InsideWorld(world.GetSizeX(), world.GetSizeY()) && world.IsEmpty(tmp)) {
-					world.DecrementSlot(GetPosition());
-					SetPosition(tmp);
-					world.IncrementSlot(GetPosition());
-					world.UpdateOrganismSlot(*this);
 
-					return true;
-				}
-				break;
-			}
-		}
+	// if empty adjacent cell found -> Antelope moves
+	Position tmp = GetEmptyAdjacent();
+	if (tmp.x != NO_EMPTY_ADJACENT) {
+		world.DecrementSlot(GetPosition());
+		SetPosition(tmp);
+		world.IncrementSlot(GetPosition());
+		return true;
 	}
+
 	return false;
 }
 
