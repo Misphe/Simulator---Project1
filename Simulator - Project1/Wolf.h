@@ -9,5 +9,6 @@ public:
 	Wolf(World& ref_world, int set_x, int set_y);
 
 	char GetSymbol() const override;
+	std::string GetName() const override;
 };
 

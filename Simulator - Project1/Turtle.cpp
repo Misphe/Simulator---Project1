@@ -30,7 +30,7 @@ void Turtle::Action() {
 
 int Turtle::DefenseResult(Organism& attacker)
 {
-	if (attacker.GetStrength() < 5) {
+	if (attacker.GetStrength() <= MIN_ATTACK_TO_KILL) {
 		return ATTACKER_RETREATS;
 	}
 	else {
@@ -42,14 +42,18 @@ char Turtle::GetSymbol() const {
 	return TURTLE_SYMBOL;
 }
 
+std::string Turtle::GetName() const {
+	return "Turtle";
+}
+
 Turtle::Turtle(World& ref_world) : Animal(ref_world) {
-	SetStrength(2);
-	SetInitiative(1);
+	SetStrength(TURTLE_STRENGTH);
+	SetInitiative(TURTLE_INITIATIVE);
 }
 
 Turtle::Turtle(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
-	SetStrength(2);
-	SetInitiative(1);
+	SetStrength(TURTLE_STRENGTH);
+	SetInitiative(TURTLE_INITIATIVE);
 }
 
 std::unique_ptr<Animal> Turtle::Breed() const {

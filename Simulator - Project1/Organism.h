@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 
 // forward declaration to avoid circular dependencies
 class World;
@@ -39,6 +40,7 @@ public:
 	const bool& IsAlive() const;
 	//const Position& GetPrevPosition() const;
 	virtual char GetSymbol() const = 0;
+	virtual std::string GetName() const = 0;
 
 	void MoveX(int change);
 	void MoveY(int change);

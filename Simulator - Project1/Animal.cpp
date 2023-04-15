@@ -27,6 +27,7 @@ void Animal::Collision() {
 			if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
 				
 				// if no space for child -> nothing happens
+				world.PushNewLog(world.CreateBreedLog(*new_animal));
 				world.AddNewOrganism(std::move(new_animal));
 			}
 		}
@@ -37,18 +38,32 @@ void Animal::Collision() {
 
 				defender->Die();
 				world.DeleteOrganismFromSlot(*defender);
+				world.PushNewLog(world.CreateLog(*this, *defender, ATTACKER_WINS));
 				break;
 			case DEFENDER_WINS:
 
 				// as attacker is unlinked from the field ( see Action() ) it doesnt 
 				// have to be removed like in the previous case
 				this->Die();
+				world.PushNewLog(world.CreateLog(*this, *defender, DEFENDER_WINS));
 				break;
 			case ATTACKER_RETREATS:
 				GoBack();
+				world.PushNewLog(world.CreateLog(*this, *defender, ATTACKER_RETREATS));
 				break;
 			case DEFENDER_RUNS_AWAY:
+				world.PushNewLog(world.CreateLog(*this, *defender, DEFENDER_RUNS_AWAY));
 				break;
+			case BOTH_DIED:
+				this->Die();
+				defender->Die();
+				world.DeleteOrganismFromSlot(*defender);
+				world.PushNewLog(world.CreateLog(*this, *defender, BOTH_DIED));
+				break;
+			case ATTACKER_EATS:
+				defender->Die();
+				world.DeleteOrganismFromSlot(*defender);
+				world.PushNewLog(world.CreateLog(*this, *defender, ATTACKER_EATS));
 			};
 		}
 	}

@@ -6,6 +6,7 @@ public:
 	void Draw() const override;
 	std::unique_ptr<Plant> Spread() const override;
 	int DefenseResult(Organism& attacker) override;
+	std::string GetName() const override;
 
 	PineBorscht(World& ref_world);
 	PineBorscht(World& ref_world, int set_x, int set_y);

@@ -29,13 +29,13 @@ void Fox::Action() {
 }
 
 Fox::Fox(World& ref_world) : Animal(ref_world) {
-	SetStrength(3);
-	SetInitiative(7);
+	SetStrength(FOX_STRENGTH);
+	SetInitiative(FOX_INITIATIVE);
 }
 
 Fox::Fox(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
-	SetStrength(3);
-	SetInitiative(7);
+	SetStrength(FOX_STRENGTH);
+	SetInitiative(FOX_INITIATIVE);
 }
 
 std::unique_ptr<Animal> Fox::Breed() const {
@@ -85,4 +85,8 @@ bool Fox::FoxSafeAtSpot(Position spot) {
 
 char Fox::GetSymbol() const {
 	return FOX_SYMBOL;
+}
+
+std::string Fox::GetName() const {
+	return "Fox";
 }

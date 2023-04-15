@@ -19,11 +19,11 @@ std::unique_ptr<Plant> PineBorscht::Spread() const {
 }
 
 PineBorscht::PineBorscht(World& ref_world) : Plant(ref_world) {
-	SetStrength(10);
+	SetStrength(PINEBORSCHT_STRENGTH);
 }
 
 PineBorscht::PineBorscht(World& ref_world, int set_x, int set_y) : Plant(ref_world, set_x, set_y) {
-	SetStrength(10);
+	SetStrength(PINEBORSCHT_STRENGTH);
 }
 
 char PineBorscht::GetSymbol() const {
@@ -40,8 +40,11 @@ void PineBorscht::Action() {
 }
 
 int PineBorscht::DefenseResult(Organism& attacker) {
-	attacker.Die();
-	return ATTACKER_WINS;
+	return BOTH_DIED;
+}
+
+std::string PineBorscht::GetName() const {
+	return "Pine Borscht";
 }
 
 void PineBorscht::KillAdjacent() {
@@ -58,6 +61,7 @@ void PineBorscht::KillAdjacent() {
 
 		victim->Die();
 		world.DeleteOrganismFromSlot(*victim);
+		world.PushNewLog(world.CreateLog(*this, *victim, ATTACKER_WINS));
 
 	}
 }

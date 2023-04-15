@@ -19,11 +19,11 @@ std::unique_ptr<Plant> Guarana::Spread() const {
 }
 
 Guarana::Guarana(World& ref_world) : Plant(ref_world) {
-	SetStrength(0);
+	SetStrength(PLANT_STRENGTH);
 }
 
 Guarana::Guarana(World& ref_world, int set_x, int set_y) : Plant(ref_world, set_x, set_y) {
-	SetStrength(0);
+	SetStrength(PLANT_STRENGTH);
 }
 
 char Guarana::GetSymbol() const {
@@ -32,5 +32,9 @@ char Guarana::GetSymbol() const {
 
 int Guarana::DefenseResult(Organism& attacker) {
 	attacker.SetStrength(attacker.GetStrength() + 3);
-	return ATTACKER_WINS;
+	return ATTACKER_EATS;
+}
+
+std::string Guarana::GetName() const {
+	return "Guarana";
 }

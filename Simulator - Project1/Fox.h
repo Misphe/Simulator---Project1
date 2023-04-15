@@ -13,5 +13,6 @@ public:
 	bool FoxSafeAtSpot(Position spot);
 
 	char GetSymbol() const override;
+	std::string GetName() const override;
 };
 

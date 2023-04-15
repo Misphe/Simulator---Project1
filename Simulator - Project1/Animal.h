@@ -9,6 +9,7 @@ public:
 	virtual void Collision() override;
 	virtual void Draw() const override = 0;
 	virtual std::unique_ptr<Animal> Breed() const = 0;
+	virtual std::string GetName() const = 0;
 
 	virtual char GetSymbol() const = 0;
 	const Position& GetPrevPosition() const;

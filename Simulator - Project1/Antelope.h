@@ -15,5 +15,6 @@ public:
 	bool AntelopeEscaped();
 
 	char GetSymbol() const override;
+	std::string GetName() const override;
 };
 

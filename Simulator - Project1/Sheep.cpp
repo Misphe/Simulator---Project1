@@ -16,17 +16,21 @@ void Sheep::Draw() const  {
 }
 
 Sheep::Sheep(World& ref_world) : Animal(ref_world) {
-	SetStrength(4);
-	SetInitiative(4);
+	SetStrength(SHEEP_STRENGTH);
+	SetInitiative(SHEEP_INITIATIVE);
 }
 
 Sheep::Sheep(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
-	SetStrength(4);
-	SetInitiative(4);
+	SetStrength(SHEEP_STRENGTH);
+	SetInitiative(SHEEP_INITIATIVE);
 }
 
 char Sheep::GetSymbol() const {
 	return SHEEP_SYMBOL;
+}
+
+std::string Sheep::GetName() const {
+	return "Sheep";
 }
 
 std::unique_ptr<Animal> Sheep::Breed() const {

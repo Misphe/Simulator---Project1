@@ -12,5 +12,6 @@ public:
 	int DefenseResult(Organism& attacker) override;
 
 	char GetSymbol() const override;
+	std::string GetName() const override;
 };
 

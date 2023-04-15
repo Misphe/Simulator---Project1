@@ -19,11 +19,11 @@ std::unique_ptr<Plant> WolfBerries::Spread() const {
 }
 
 WolfBerries::WolfBerries(World& ref_world) : Plant(ref_world) {
-	SetStrength(99);
+	SetStrength(WOLFBERRIES_STRENGTH);
 }
 
 WolfBerries::WolfBerries(World& ref_world, int set_x, int set_y) : Plant(ref_world, set_x, set_y) {
-	SetStrength(99);
+	SetStrength(WOLFBERRIES_STRENGTH);
 }
 
 char WolfBerries::GetSymbol() const {
@@ -35,6 +35,9 @@ char WolfBerries::GetSymbol2() const {
 }
 
 int WolfBerries::DefenseResult(Organism& attacker) {
-	attacker.Die();
-	return ATTACKER_WINS;
+	return BOTH_DIED;
+}
+
+std::string WolfBerries::GetName() const {
+	return "Wolf Berries";
 }

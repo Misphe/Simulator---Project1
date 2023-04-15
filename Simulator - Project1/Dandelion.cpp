@@ -18,8 +18,12 @@ std::unique_ptr<Plant> Dandelion::Spread() const {
 	return std::make_unique<Dandelion>(world, GetX(), GetY());
 }
 
+std::string Dandelion::GetName() const {
+	return "Dandelion";
+}
+
 void Dandelion::Action() {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < DANDELION_TURNS; i++) {
 		Plant::Action();
 	}
 }

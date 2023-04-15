@@ -23,10 +23,10 @@ void Antelope::Action() {
 	// the while statement stands for not allowing moving into walls
 	do {
 		if (rand() % 2) {
-			rand() % 2 ? this->MoveX(2) : this->MoveX(-2);
+			rand() % 2 ? this->MoveX(ANTELOPE_JUMP) : this->MoveX(-ANTELOPE_JUMP);
 		}
 		else {
-			rand() % 2 ? this->MoveY(2) : this->MoveY(-2);
+			rand() % 2 ? this->MoveY(ANTELOPE_JUMP) : this->MoveY(-ANTELOPE_JUMP);
 		}
 	} while (GetPosition() == GetPrevPosition());
 
@@ -43,6 +43,7 @@ void Antelope::Collision() {
 			std::unique_ptr<Animal> new_animal = Breed();
 			if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
 				//new_animal->Draw();
+				world.PushNewLog(world.CreateBreedLog(*new_animal));
 				world.AddNewOrganism(std::move(new_animal));
 			}
 			return;
@@ -75,13 +76,13 @@ int Antelope::DefenseResult(Organism& attacker)
 }
 
 Antelope::Antelope(World& ref_world) : Animal(ref_world) {
-	SetStrength(4);
-	SetInitiative(4);
+	SetStrength(ANTELOPE_STRENGTH);
+	SetInitiative(ANTELOPE_INITIATIVE);
 }
 
 Antelope::Antelope(World& ref_world, int set_x, int set_y) : Animal(ref_world, set_x, set_y) {
-	SetStrength(4);
-	SetInitiative(4);
+	SetStrength(ANTELOPE_STRENGTH);
+	SetInitiative(ANTELOPE_INITIATIVE);
 }
 
 std::unique_ptr<Animal> Antelope::Breed() const {
@@ -107,4 +108,8 @@ bool Antelope::AntelopeEscaped() {
 
 char Antelope::GetSymbol() const {
 	return ANTELOPE_SYMBOL;
+}
+
+std::string Antelope::GetName() const {
+	return "Antelope";
 }
