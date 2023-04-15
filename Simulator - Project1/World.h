@@ -23,7 +23,6 @@ private:
 	Human* player;
 
 	void SortOrganisms();
-	Organism* CheckForCollision(std::unique_ptr<Organism>& current);
 
 	void ExecuteTurn();
 	void Clear();
@@ -49,16 +48,17 @@ public:
 	void DecrementSlot(const Position& position);
 	bool IsEmpty(Position position) const;
 	bool IsOrganismAt(Position position) const;
+	Organism* CheckForCollision(const Organism& current);
 
 	void UpdateOneOrganism(std::unique_ptr<Organism>& current);
 	void UpdateOneOrganism(std::unique_ptr<Animal>& current);
 	void UpdateOneOrganism(Organism& current);
 	void UpdateMapSlotsView();
 
-	const Organism* GetOrganismAtPos(Position spot);
+	Organism* GetOrganismAtPos(Position spot);
 
 	void SetOrganismToSlot(Organism& organism);
 	void DeleteOrganismFromSlot(Organism& organism);
-	void UpdateOrganismSlot(Organism& organism);
+	void UpdateAnimalSlot(Animal& organism);
 };
 
