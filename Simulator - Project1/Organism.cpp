@@ -1,5 +1,6 @@
 #include "Organism.h"
 #include "World.h"
+#include "Libraries.h"
 
 void Organism::SetX(int new_x) {
 	if (new_x < world.GetSizeX() && new_x >= 0) {
@@ -57,24 +58,29 @@ const Position& Organism::GetPosition() const {
 	return position;
 }
 
-Organism::Organism(World& ref_world) : world(ref_world), alive_time(1) {
-	int set_x = rand() % world.GetSizeX();
-	int set_y = rand() % world.GetSizeY();
-	while (!world.IsEmpty({set_x, set_y})) {
-		int set_x = rand() % world.GetSizeX();
-		int set_y = rand() % world.GetSizeY();
+// returns position to the randomly picked adjacent empty cell. If that cell doesn't exist
+// returns position with error x and y
+Position Organism::GetEmptyAdjacent() {
+	int x = this->GetX();
+	int y = this->GetY();
+	Position adjacent[] = { { 1, 0 }, { -1,0 }, { 0,1 }, { 0,-1 } };
+	bool tested[] = { false,false,false,false };
+	int random;
+	Position tmp;
+	for (int i = 0; i < 4; i++) {
+		while (true) {
+			random = rand() % 4;
+			if (tested[random] != true) {
+				tested[random] = true;
+				tmp = { x + adjacent[random].x, y + adjacent[random].y };
+				if (tmp.InsideWorld(world.GetSizeX(), world.GetSizeY()) && world.IsEmpty(tmp)) {
+					return tmp;
+				}
+				break;
+			}
+		}
 	}
-	SetX(set_x);
-	SetY(set_y);
-	prev_position = position;
-	alive = true;
-}
-
-Organism::Organism(World& ref_world, int set_x, int set_y) : world(ref_world), alive_time(1) {
-	SetX(set_x);
-	SetY(set_y);
-	prev_position = position;
-	alive = true;
+	return { NO_EMPTY_ADJACENT, NO_EMPTY_ADJACENT };
 }
 
 void Organism::Die() {
@@ -86,16 +92,20 @@ const bool& Organism::IsAlive() const {
 	return alive;
 }
 
-const Position& Organism::GetPrevPosition() const {
-	return prev_position;
+Organism::Organism(World& ref_world) : world(ref_world), alive_time(1) {
+	int set_x = rand() % world.GetSizeX();
+	int set_y = rand() % world.GetSizeY();
+	while (!world.IsEmpty({set_x, set_y})) {
+		int set_x = rand() % world.GetSizeX();
+		int set_y = rand() % world.GetSizeY();
+	}
+	SetX(set_x);
+	SetY(set_y);
+	alive = true;
 }
 
-void Organism::UpdatePrevPosition() {
-	prev_position = position;
-}
-
-void Organism::GoBack() {
-	world.DecrementSlot(GetPosition());
-	SetPosition(GetPrevPosition());
-	world.IncrementSlot(GetPosition());
+Organism::Organism(World& ref_world, int set_x, int set_y) : world(ref_world), alive_time(1) {
+	SetX(set_x);
+	SetY(set_y);
+	alive = true;
 }

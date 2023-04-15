@@ -26,7 +26,7 @@ protected:
 	int alive_time;
 	bool alive;
 	Position position;
-	Position prev_position;
+	//Position prev_position;
 	World& world;
 
 public:
@@ -37,13 +37,12 @@ public:
 	const int& GetAliveTime() const;
 	const Position& GetPosition() const;
 	const bool& IsAlive() const;
-	const Position& GetPrevPosition() const;
+	//const Position& GetPrevPosition() const;
 	virtual char GetSymbol() const = 0;
 
 	void MoveX(int change);
 	void MoveY(int change);
-	void UpdatePrevPosition();
-	void GoBack(); // in position
+	//void UpdatePrevPosition();
 
 	void SetX(int new_x);
 	void SetY(int new_y);
@@ -52,12 +51,14 @@ public:
 	void SetInitiative(int new_initiative);
 
 	virtual void Action() = 0;
-	virtual void Collision(Organism* defender) = 0;
+	virtual void Collision() = 0;
 	virtual void Draw() const = 0;
 	virtual void Die();
 	virtual int DefenseResult(Organism& attacker) = 0;
 
 	Organism(World& ref_world);
 	Organism(World& ref_world, int set_x, int set_y);
+
+	Position GetEmptyAdjacent();
 };
 
