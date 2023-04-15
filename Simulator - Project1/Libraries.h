@@ -25,10 +25,14 @@
 #define TURTLE_SYMBOL 'T'
 #define ANTELOPE_SYMBOL 'A'
 
+#define GRASS_SYMBOL 'G'
+
 #define ATTACKER_WINS 1
 #define DEFENDER_WINS 0
 #define ATTACKER_RETREATS 2
 #define DEFENDER_RUNS_AWAY 3
+
+#define NO_EMPTY_ADJACENT -1
 
 
 #define SLOW_MODE false
