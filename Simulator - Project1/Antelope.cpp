@@ -110,6 +110,10 @@ char Antelope::GetSymbol() const {
 	return ANTELOPE_SYMBOL;
 }
 
+int Antelope::GetColor() const {
+	return SET_BG_LIGHTMAGENTA;
+}
+
 std::string Antelope::GetName() const {
 	return "Antelope";
 }

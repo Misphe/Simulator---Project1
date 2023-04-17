@@ -14,5 +14,6 @@ public:
 	void KillAdjacent();
 	char GetSymbol() const override;
 	char GetSymbol2() const;
+	int GetColor() const override;
 };
 

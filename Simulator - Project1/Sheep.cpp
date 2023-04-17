@@ -33,6 +33,10 @@ std::string Sheep::GetName() const {
 	return "Sheep";
 }
 
+int Sheep::GetColor() const {
+	return SET_BG_WHITE;
+}
+
 std::unique_ptr<Animal> Sheep::Breed() const {
 	return std::make_unique<Sheep>(world, GetX(), GetY());
 }

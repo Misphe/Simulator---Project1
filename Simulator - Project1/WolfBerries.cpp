@@ -34,6 +34,10 @@ char WolfBerries::GetSymbol2() const {
 	return WOLFBERRIES_SYMBOL_2;
 }
 
+int WolfBerries::GetColor() const {
+	return SET_BG_DARKGRAY;
+}
+
 int WolfBerries::DefenseResult(Organism& attacker) {
 	return BOTH_DIED;
 }

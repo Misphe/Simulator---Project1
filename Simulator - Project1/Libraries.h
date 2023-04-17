@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <algorithm>
 #include <string>
+#include <fstream>
 
 #define UP_ARROW 72
 #define DOWN_ARROW 80
@@ -13,6 +14,7 @@
 #define ESCAPE 27
 
 #define SUPERPOWER 'f'
+#define SAVE 's'
 
 #define BOARD_POS_X 0 // at least 0
 #define BOARD_POS_Y 0 // at least 0
@@ -77,7 +79,7 @@
 #define SET_BG_LIGHTRED 192		 // Pine Borscht
 #define SET_BG_LIGHTMAGENTA 208  // Antelope
 #define SET_BG_LIGHTYELLOW 224	 // Map surface
-#define SET_BG_WHITE 240		 // White
+#define SET_BG_WHITE 240		 // Sheep
 
 #define PLANT_STRENGTH 0
 #define PLANT_SPREAD_CHANCE 20 // one in this amount per turn
@@ -111,13 +113,13 @@
 
 #define DANDELION_TURNS 3
 
-#define WOLF_COUNT 2
-#define SHEEP_COUNT 2
-#define FOX_COUNT 2
-#define TURTLE_COUNT 2
-#define ANTELOPE_COUNT 8
-#define GRASS_COUNT 2
-#define DANDELION_COUNT 2
-#define GUARANA_COUNT 2
-#define WOLFBERRIES_COUNT 2
-#define PINEBORSCHT_COUNT 2
+#define WOLF_COUNT 4
+#define SHEEP_COUNT 4
+#define FOX_COUNT 4
+#define TURTLE_COUNT 4
+#define ANTELOPE_COUNT 4
+#define GRASS_COUNT 4
+#define DANDELION_COUNT 4
+#define GUARANA_COUNT 4
+#define WOLFBERRIES_COUNT 4
+#define PINEBORSCHT_COUNT 4

@@ -39,3 +39,7 @@ Dandelion::Dandelion(World& ref_world, int set_x, int set_y) : Plant(ref_world, 
 char Dandelion::GetSymbol() const {
 	return DANDELION_SYMBOL;
 }
+
+int Dandelion::GetColor() const {
+	return SET_BG_YELLOW;
+}

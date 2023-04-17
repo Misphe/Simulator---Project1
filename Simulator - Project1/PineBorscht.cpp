@@ -34,6 +34,10 @@ char PineBorscht::GetSymbol2() const {
 	return PINEBORSCHT_SYMBOL_2;
 }
 
+int PineBorscht::GetColor() const {
+	return SET_BG_LIGHTRED;
+}
+
 void PineBorscht::Action() {
 	KillAdjacent();
 	Plant::Action();

@@ -80,7 +80,7 @@ bool Fox::FoxSafeAtSpot(Position spot) {
 	else if (GetAliveTime() > adjacent->GetAliveTime()) {
 		return true;
 	}
-	else return false;
+	else return true;
 }
 
 char Fox::GetSymbol() const {
@@ -89,4 +89,8 @@ char Fox::GetSymbol() const {
 
 std::string Fox::GetName() const {
 	return "Fox";
+}
+
+int Fox::GetColor() const {
+	return SET_BG_RED;
 }

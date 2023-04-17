@@ -13,5 +13,6 @@ public:
 
 	char GetSymbol() const override;
 	std::string GetName() const override;
+	int GetColor() const override;
 };
 

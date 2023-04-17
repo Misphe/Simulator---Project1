@@ -30,6 +30,10 @@ char Guarana::GetSymbol() const {
 	return GUARANA_SYMBOL;
 }
 
+int Guarana::GetColor() const {
+	return SET_BG_MAGENTA;
+}
+
 int Guarana::DefenseResult(Organism& attacker) {
 	attacker.SetStrength(attacker.GetStrength() + 3);
 	return ATTACKER_EATS;

@@ -150,3 +150,7 @@ char Human::GetSymbol() const {
 std::string Human::GetName() const {
 	return "Human";
 }
+
+int Human::GetColor() const {
+	return SET_BG_GREEN;
+}

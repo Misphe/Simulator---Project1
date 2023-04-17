@@ -33,3 +33,7 @@ Grass::Grass(World& ref_world, int set_x, int set_y) : Plant(ref_world, set_x, s
 char Grass::GetSymbol() const {
 	return GRASS_SYMBOL;
 }
+
+int Grass::GetColor() const {
+	return SET_BG_LIGHTGREEN;
+}

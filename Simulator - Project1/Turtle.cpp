@@ -46,6 +46,10 @@ std::string Turtle::GetName() const {
 	return "Turtle";
 }
 
+int Turtle::GetColor() const {
+	return SET_BG_CYAN;
+}
+
 Turtle::Turtle(World& ref_world) : Animal(ref_world) {
 	SetStrength(TURTLE_STRENGTH);
 	SetInitiative(TURTLE_INITIATIVE);
