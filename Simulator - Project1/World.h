@@ -77,6 +77,8 @@ public:
 	std::string CreateLog(Organism& attacker, Organism& defender, int message);
 	std::string CreateBreedLog(Organism& new_organism);
 
+	void SaveWorldState();
+
 	~World();
 };
 

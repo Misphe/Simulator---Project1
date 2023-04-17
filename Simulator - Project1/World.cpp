@@ -1,6 +1,5 @@
 #include "World.h"
 #include "Libraries.h"
-#include <algorithm>
 
 World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_size_y) {
 	for (int i = 0; i < LOG_LENGTH; i++) {
@@ -102,40 +101,90 @@ void World::ExecuteTurn() {
 }
 
 void World::DrawWorld() {
-	if (!SLOW_MODE) {
-		//Clear();
+
+	// length of one row in console
+	int row_length = X_SCALING * (GetSizeX() + X_FRAME);
+
+	// length of one column in console
+	int col_length = GetSizeY() + 2 * Y_FRAME;
+
+	// creating buffer to store output
+	CHAR_INFO* buffer = new CHAR_INFO[col_length * row_length];
+
+	// set first row to blue color
+	for (int i = 0; i < row_length; i++) {
+		buffer[i].Char.AsciiChar = ' ';
+		buffer[i].Attributes = SET_BG_BLUE;
 	}
 
+	// create map
+	for (int row = 0; row < GetSizeY(); row++) {
+		for (int col = 0; col < row_length; col+=2) {
+			int index = row_length + row * row_length + col;
 
+			// first column or alst column
+			if (col == 0 || col == row_length - X_FRAME) {
+				buffer[index].Char.AsciiChar = ' ';
+				buffer[index].Attributes = SET_BG_BLUE;
+				buffer[index + 1].Char.AsciiChar = ' ';
+				buffer[index + 1].Attributes = SET_BG_BLUE;
+			}
 
-	MoveCursor(BOARD_POS_X, BOARD_POS_Y);
-	SetColor(SET_BG_LIGHTBLUE);
-	for (int i = 1; i <= size_x + X_FRAME; i++) {
-		printf("  ");
-	}
-	for (int i = 0; i < size_y; i++) {
-
-		MoveCursor(BOARD_POS_X, BOARD_POS_Y + Y_FRAME + i);
-		SetColor(SET_BG_LIGHTBLUE);
-		printf("  ");
-		for (int j = 0; j < size_x; j++) {
-			if (organisms_slots[j][i] == nullptr) {
-				SetColor(SET_BG_LIGHTYELLOW);
-				printf("  ");
+			else if (organisms_slots[(col - X_FRAME)/X_SCALING][row] != nullptr) {
+				buffer[index].Char.AsciiChar = ' ';
+				buffer[index].Attributes = organisms_slots[(col - X_FRAME) / X_SCALING][row]->GetColor();
+				buffer[index + 1].Char.AsciiChar = ' ';
+				buffer[index + 1].Attributes = organisms_slots[(col - X_FRAME) / X_SCALING][row]->GetColor();
 			}
 			else {
-				organisms_slots[j][i]->Draw();
+				buffer[index].Char.AsciiChar = ' ';
+				buffer[index].Attributes = SET_BG_LIGHTYELLOW;
+				buffer[index + 1].Char.AsciiChar = ' ';
+				buffer[index + 1].Attributes = SET_BG_LIGHTYELLOW;
 			}
 		}
-		SetColor(SET_BG_LIGHTBLUE);
-		printf("  ");
 	}
-	MoveCursor(BOARD_POS_X, size_y + Y_FRAME + BOARD_POS_Y);
-	for (int i = 1; i <= size_x + X_FRAME; i++) {
-		printf("  ");
+	for (int i = 0; i < row_length; i++){
+		int index = (col_length - 1) * row_length + i;
+		buffer[index].Char.AsciiChar = ' ';
+		buffer[index].Attributes = SET_BG_BLUE;
 	}
-	//UpdateMapSlotsView();
 
+	SMALL_RECT rect = { BOARD_POS_X, BOARD_POS_Y, BOARD_POS_X + (GetSizeX() * 2 + 4) - 1, BOARD_POS_Y + GetSizeY() + 2 - 1};
+	WriteConsoleOutputA(console, buffer, { (short)(GetSizeX() * 2 + 4), (short)(GetSizeY() + 2)}, {0, 0}, &rect);
+
+	delete[] buffer;
+
+	if (SLOW_MODE) {
+		MoveCursor(BOARD_POS_X, BOARD_POS_Y);
+		SetColor(SET_BG_LIGHTBLUE);
+		for (int i = 1; i <= size_x + X_FRAME; i++) {
+			printf("  ");
+		}
+		for (int i = 0; i < size_y; i++) {
+
+			MoveCursor(BOARD_POS_X, BOARD_POS_Y + Y_FRAME + i);
+			SetColor(SET_BG_LIGHTBLUE);
+			printf("  ");
+			for (int j = 0; j < size_x; j++) {
+				if (organisms_slots[j][i] == nullptr) {
+					SetColor(SET_BG_LIGHTYELLOW);
+					printf("  ");
+				}
+				else {
+					organisms_slots[j][i]->Draw();
+				}
+			}
+			SetColor(SET_BG_LIGHTBLUE);
+			printf("  ");
+		}
+		MoveCursor(BOARD_POS_X, size_y + Y_FRAME + BOARD_POS_Y);
+		for (int i = 1; i <= size_x + X_FRAME; i++) {
+			printf("  ");
+		}
+	}
+
+	// logs
 	SetColor(SET_BG_GREEN);
 	for (int i = 0; i < LOG_LENGTH; i++) {
 		MoveCursor(LOG_X, LOG_Y + LOG_LENGTH - i);
@@ -145,8 +194,6 @@ void World::DrawWorld() {
 		}
 	}
 	SetColor(SET_BG_LIGHTBLUE);
-
-
 
 	// Make cursor invisible
 	std::cout << "\033[?25l";
@@ -264,15 +311,24 @@ int World::SetInput() {
 	int input;
 	while (!success) {
 		input = _getch();
+
+		switch (input) {
+		case ESCAPE:
+			success = true;
+			continue;
+			break;
+		case SAVE:
+			SaveWorldState();
+			continue;
+			break;
+		};
+
 		switch (player != nullptr) {
 		case true:
 			switch (input) {
 			case ARROW_CLICK:
 				input = _getch();
 				player->SetMove(input);
-				success = true;
-				break;
-			case ESCAPE:
 				success = true;
 				break;
 			case SUPERPOWER:
@@ -282,16 +338,18 @@ int World::SetInput() {
 				}
 				break;
 			};
+			break;
 		case false:
 			switch (input) {
 			case ARROW_CLICK:
 				input = _getch();
 				success = true;
 				break;
-			case ESCAPE:
+			default:
 				success = true;
 				break;
 			};
+			break;
 		};
 	}
 	return input;
@@ -335,4 +393,23 @@ std::string World::CreateLog(Organism& attacker, Organism& defender, int message
 
 std::string World::CreateBreedLog(Organism& new_organism) {
 	return new_organism.GetName() + " appeared at (" + std::to_string(new_organism.GetX()) + "," + std::to_string(new_organism.GetY()) + ")";
+}
+
+void World::SaveWorldState() {
+	std::ofstream file("save.txt"); // create a new file called "output.txt"
+	if (!file.is_open()) return;
+
+	file << "size_x: " << GetSizeX() << "\n";
+	file << "size_y: " << GetSizeY() << "\n";
+	file << "organisms_size: " << organisms.size();
+	for (int i = 0; i < organisms.size(); i++) {
+		file << "\n";
+		file << organisms[i]->GetSymbol() << " ";
+		file << organisms[i]->GetStrength() << " ";
+		file << organisms[i]->GetInitiative() << " ";
+		file << organisms[i]->GetAliveTime() << " ";
+		file << organisms[i]->GetX() << " ";
+		file << organisms[i]->GetY() << " ";
+	}
+	file.close();
 }
