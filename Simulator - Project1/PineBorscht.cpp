@@ -27,11 +27,7 @@ PineBorscht::PineBorscht(World& ref_world, int set_x, int set_y) : Plant(ref_wor
 }
 
 char PineBorscht::GetSymbol() const {
-	return PINEBORSCHT_SYMBOL_1;
-}
-
-char PineBorscht::GetSymbol2() const {
-	return PINEBORSCHT_SYMBOL_2;
+	return PINEBORSCHT_SYMBOL;
 }
 
 int PineBorscht::GetColor() const {

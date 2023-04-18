@@ -27,11 +27,7 @@ WolfBerries::WolfBerries(World& ref_world, int set_x, int set_y) : Plant(ref_wor
 }
 
 char WolfBerries::GetSymbol() const {
-	return WOLFBERRIES_SYMBOL_1;
-}
-
-char WolfBerries::GetSymbol2() const {
-	return WOLFBERRIES_SYMBOL_2;
+	return WOLFBERRIES_SYMBOL;
 }
 
 int WolfBerries::GetColor() const {

@@ -66,6 +66,13 @@ Human::Human(World& ref_world) : Animal(ref_world), power_activated(false) {
 	move = '\0';
 }
 
+Human::Human(World& ref_world, int x, int y) : Animal(ref_world, x, y), power_activated(false) {
+	SetStrength(HUMAN_STRENGTH);
+	SetInitiative(HUMAN_INITIATIVE);
+	cooldown = 0;
+	move = '\0';
+}
+
 std::unique_ptr<Animal> Human::Breed() const {
 	return std::make_unique<Human>(world);
 }
@@ -86,8 +93,7 @@ const char& Human::GetInput() const {
 	return move;
 }
 
-const bool& Human::PowerActivated() const
-{
+const bool& Human::PowerActivated() const {
 	return power_activated;
 }
 
@@ -97,6 +103,14 @@ const int& Human::GetCooldown() {
 
 void Human::SetCooldown() {
 	cooldown = MAX_COOLDOWN;
+}
+
+void Human::SetCooldown(int set_cooldown) {
+	cooldown = set_cooldown;
+}
+
+void Human::SetPowerState(bool state) {
+	power_activated = state;
 }
 
 void Human::DecrementCooldown() {

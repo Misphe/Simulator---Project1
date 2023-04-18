@@ -158,6 +158,11 @@ void Animal::UpdatePrevPosition() {
 	prev_position = position;
 }
 
+void Animal::SetPrevPosition(int x, int y) {
+	prev_position.x = x;
+	prev_position.y = y;
+}
+
 void Animal::GoBack() {
 	world.DecrementSlot(GetPosition());
 	SetPosition(GetPrevPosition());

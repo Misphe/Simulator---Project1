@@ -22,8 +22,8 @@ class Organism;
 
 class World {
 private:
-	const int size_x;
-	const int size_y;
+	int size_x;
+	int size_y;
 	std::vector<std::unique_ptr<Organism>> organisms;
 	int** map_slots;
 	Organism*** organisms_slots;
@@ -35,7 +35,6 @@ private:
 	void SortOrganisms();
 
 	void ExecuteTurn();
-	void Clear();
 	void DrawFrame();
 
 public:
@@ -51,6 +50,7 @@ public:
 
 	int SetInput();
 	void SetPlayer();
+	void SetSize(int x, int y);
 	void AbortPlayer();
 	World(int set_size_x, int set_size_y);
 
@@ -61,9 +61,6 @@ public:
 	bool IsOrganismAt(Position position) const;
 	Organism* CheckForCollision(const Organism& current);
 
-	void UpdateOneOrganism(std::unique_ptr<Organism>& current);
-	void UpdateOneOrganism(std::unique_ptr<Animal>& current);
-	void UpdateOneOrganism(Organism& current);
 	void UpdateMapSlotsView();
 
 	Organism* GetOrganismAtPos(Position spot);
@@ -76,8 +73,12 @@ public:
 	void PushNewLog(std::string&& new_log);
 	std::string CreateLog(Organism& attacker, Organism& defender, int message);
 	std::string CreateBreedLog(Organism& new_organism);
+	void SetLog(int i, std::string&& set_log);
 
+	void Reset();
 	void SaveWorldState();
+	void LoadWorld();
+	std::unique_ptr<Organism> CreateOrganismFromFile(char symbol, int x, int y);
 
 	~World();
 };

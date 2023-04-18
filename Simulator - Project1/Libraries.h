@@ -15,6 +15,7 @@
 
 #define SUPERPOWER 'f'
 #define SAVE 's'
+#define LOAD 'l'
 
 #define BOARD_POS_X 0 // at least 0
 #define BOARD_POS_Y 0 // at least 0
@@ -24,7 +25,7 @@
 
 #define LOG_X (BOARD_POS_X + size_x * X_SCALING + X_FRAME + 10)
 #define LOG_Y (BOARD_POS_Y + Y_FRAME)
-#define LOG_LENGTH 20
+#define LOG_LENGTH 50
 #define LOG_LINE_LENGTH 50
 
 #define HUMAN_SYMBOL 'H'
@@ -37,10 +38,8 @@
 #define GRASS_SYMBOL 'G'
 #define DANDELION_SYMBOL 'D'
 #define GUARANA_SYMBOL 'U'
-#define WOLFBERRIES_SYMBOL_1 'W'
-#define WOLFBERRIES_SYMBOL_2 'B'
-#define PINEBORSCHT_SYMBOL_1 'P'
-#define PINEBORSCHT_SYMBOL_2 'B'
+#define WOLFBERRIES_SYMBOL 'B'
+#define PINEBORSCHT_SYMBOL 'P'
 
 #define ATTACKER_WINS 1
 #define DEFENDER_WINS 0

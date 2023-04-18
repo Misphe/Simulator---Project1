@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Libraries.h"
+#include <sstream>
 
 World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_size_y) {
 	for (int i = 0; i < LOG_LENGTH; i++) {
@@ -52,6 +53,22 @@ World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_si
 
 void World::IncrementSlot(const Position& position) {
 	map_slots[position.x][position.y]++;
+}
+
+void World::SetSize(int x, int y) {
+	size_x = x;
+	size_y = y;
+
+	map_slots = new int*[size_x];
+	organisms_slots = new Organism**[size_x];
+	for (int i = 0; i < size_x; i++) {
+		map_slots[i] = new int[size_y];
+		organisms_slots[i] = new Organism*[size_y];
+		for (int j = 0; j < size_y; j++) {
+			map_slots[i][j] = 0;
+			organisms_slots[i][j] = nullptr;
+		}
+	}
 }
 
 void World::DecrementSlot(const Position& position) {
@@ -144,12 +161,15 @@ void World::DrawWorld() {
 			}
 		}
 	}
+
+	// last row filling with blue
 	for (int i = 0; i < row_length; i++){
 		int index = (col_length - 1) * row_length + i;
 		buffer[index].Char.AsciiChar = ' ';
 		buffer[index].Attributes = SET_BG_BLUE;
 	}
 
+	// output what we stored
 	SMALL_RECT rect = { BOARD_POS_X, BOARD_POS_Y, BOARD_POS_X + (GetSizeX() * 2 + 4) - 1, BOARD_POS_Y + GetSizeY() + 2 - 1};
 	WriteConsoleOutputA(console, buffer, { (short)(GetSizeX() * 2 + 4), (short)(GetSizeY() + 2)}, {0, 0}, &rect);
 
@@ -261,8 +281,6 @@ Organism* World::CheckForCollision(const Organism& current) {
 void World::AddNewOrganism(std::unique_ptr<Organism>&& organism) {
 	IncrementSlot(organism->GetPosition());
 	SetOrganismToSlot(*organism.get());
-	int x = organisms_slots[organism->GetX()][organism->GetY()]->GetX();
-	int y = organisms_slots[organism->GetX()][organism->GetY()]->GetY();
 	organisms.emplace_back(std::move(organism));
 }
 
@@ -321,6 +339,10 @@ int World::SetInput() {
 			SaveWorldState();
 			continue;
 			break;
+		case LOAD:
+			LoadWorld();
+			continue;
+			break;
 		};
 
 		switch (player != nullptr) {
@@ -372,6 +394,10 @@ void World::PushNewLog(std::string&& new_log) {
 	logs[0] = std::move(new_log);
 }
 
+void World::SetLog(int i, std::string&& set_log) {
+	logs[i] = std::move(set_log);
+}
+
 std::string World::CreateLog(Organism& attacker, Organism& defender, int message) {
 	std::string attacker_info = attacker.GetName() + "(" + std::to_string(attacker.GetX()) + "," + std::to_string(attacker.GetY()) + ")";
 	std::string defender_info = defender.GetName() + "(" + std::to_string(defender.GetX()) + "," + std::to_string(defender.GetY()) + ")";
@@ -395,21 +421,164 @@ std::string World::CreateBreedLog(Organism& new_organism) {
 	return new_organism.GetName() + " appeared at (" + std::to_string(new_organism.GetX()) + "," + std::to_string(new_organism.GetY()) + ")";
 }
 
+void World::Reset() {
+
+	organisms.clear();
+
+	for (int i = 0; i < size_x; i++) {
+		delete[] organisms_slots[i];
+		delete[] map_slots[i];
+
+	}
+	delete[] map_slots;
+	delete[] organisms_slots;
+
+	for (int i = 0; i < LOG_LENGTH; i++) {
+		logs[i] = "";
+	}
+
+	SetSize(0, 0);
+	AbortPlayer();
+}
+
 void World::SaveWorldState() {
 	std::ofstream file("save.txt"); // create a new file called "output.txt"
 	if (!file.is_open()) return;
 
 	file << "size_x: " << GetSizeX() << "\n";
 	file << "size_y: " << GetSizeY() << "\n";
-	file << "organisms_size: " << organisms.size();
+	file << "organisms_size: " << organisms.size() << "\n";
+	file << "player_alive: " << (player ? 1 : 0) << "\n";
+	if (player) {
+		file << "cooldown: " << player->GetCooldown() << "\n";
+		file << "power: " << (int)player->PowerActivated() << "\n";
+	}
 	for (int i = 0; i < organisms.size(); i++) {
-		file << "\n";
 		file << organisms[i]->GetSymbol() << " ";
+		if (dynamic_cast<Animal*>(organisms[i].get())) {
+			file << "Animal ";
+			file << dynamic_cast<Animal*>(organisms[i].get())->GetPrevPosition().x << " ";
+			file << dynamic_cast<Animal*>(organisms[i].get())->GetPrevPosition().y << " ";
+		}
+		else {
+			file << "Plant ";
+		}
 		file << organisms[i]->GetStrength() << " ";
 		file << organisms[i]->GetInitiative() << " ";
 		file << organisms[i]->GetAliveTime() << " ";
 		file << organisms[i]->GetX() << " ";
-		file << organisms[i]->GetY() << " ";
+		file << organisms[i]->GetY() << "\n";
 	}
+
+	for (int i = 0; i < LOG_LENGTH; i++) {
+		if (logs[i].empty()) break;
+		file << logs[i] << "\n";
+	}
+	file << '/';
+
 	file.close();
+}
+
+void World::LoadWorld() {
+	std::ifstream file("save.txt"); // open the file for reading
+	if (!file.is_open()) return;
+
+	Reset();
+
+	int size_x, size_y, organisms_size, cooldown, power;
+	bool player_alive = false;
+	char symbol;
+	std::string line, title, organism_type;
+
+	file >> title >> size_x;
+	file >> title >> size_y;
+	file >> title >> organisms_size;
+	file >> title >> player_alive;
+	if (player_alive) {
+		file >> title >> cooldown;
+		file >> title >> power;
+	}
+	
+	SetSize(size_x, size_y);
+	organisms.reserve(organisms_size);
+
+	int prev_x, prev_y, strength, initiative, alive_time, x, y;
+
+	for (int i = 0; i < organisms_size; i++) {
+		file >> symbol;
+		file >> organism_type;
+		if (organism_type == "Animal") {
+			file >> prev_x >> prev_y;
+		}
+
+		file >> strength >> initiative >> alive_time >> x >> y;
+		
+		std::unique_ptr<Organism> organism = CreateOrganismFromFile(symbol, x, y);
+		organism->SetStrength(strength);
+		organism->SetAliveTime(alive_time);
+
+		if (Animal* animal = dynamic_cast<Animal*>(organism.get())) {
+			animal->SetPrevPosition(prev_x, prev_y);
+		}
+		
+		AddNewOrganism(std::move(organism));
+	}
+
+	for (int i = 0; i < LOG_LENGTH; i++) {
+		std::getline(file, line);
+		if (line.empty()) {
+			i--;
+			continue;
+		}
+		if (line != "/") {
+			SetLog(i, std::move(line));
+		}
+	}
+
+	SetPlayer();
+	if (player != nullptr) {
+		player->SetCooldown(cooldown);
+		player->SetPowerState(power);
+	}
+	DrawWorld();
+
+	file.close();
+}
+
+std::unique_ptr<Organism> World::CreateOrganismFromFile(char symbol, int x, int y) {
+	switch (symbol) {
+	case HUMAN_SYMBOL:
+		return std::make_unique<Human>(*this, x, y);
+		break;
+	case WOLF_SYMBOL:
+		return std::make_unique<Wolf>(*this, x, y);
+		break;
+	case SHEEP_SYMBOL:
+		return std::make_unique<Sheep>(*this, x, y);
+		break;
+	case FOX_SYMBOL:
+		return std::make_unique<Fox>(*this, x, y);
+		break;
+	case ANTELOPE_SYMBOL:
+		return std::make_unique<Antelope>(*this, x, y);
+		break;
+	case TURTLE_SYMBOL:
+		return std::make_unique<Turtle>(*this, x, y);
+		break;
+	case GRASS_SYMBOL:
+		return std::make_unique<Grass>(*this, x, y);
+		break;
+	case DANDELION_SYMBOL:
+		return std::make_unique<Dandelion>(*this, x, y);
+		break;
+	case GUARANA_SYMBOL:
+		return std::make_unique<Guarana>(*this, x, y);
+		break;
+	case WOLFBERRIES_SYMBOL:
+		return std::make_unique<WolfBerries>(*this, x, y);
+		break;
+	case PINEBORSCHT_SYMBOL:
+		return std::make_unique<PineBorscht>(*this, x, y);
+		break;
+	};
 }

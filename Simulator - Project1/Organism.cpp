@@ -22,6 +22,10 @@ void Organism::SetInitiative(int new_initiative) {
 	initiative = new_initiative;
 }
 
+void Organism::SetAliveTime(int time) {
+	alive_time = time;
+}
+
 void Organism::SetPosition(Position new_position) {
 	position = new_position;
 }

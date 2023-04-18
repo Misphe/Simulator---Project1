@@ -45,13 +45,13 @@ public:
 
 	void MoveX(int change);
 	void MoveY(int change);
-	//void UpdatePrevPosition();
 
 	void SetX(int new_x);
 	void SetY(int new_y);
 	void SetPosition(Position new_position);
 	void SetStrength(int new_strength);
 	void SetInitiative(int new_initiative);
+	void SetAliveTime(int time);
 
 	virtual void Action() = 0;
 	virtual void Collision() = 0;

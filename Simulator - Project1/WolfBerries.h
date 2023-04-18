@@ -12,7 +12,6 @@ public:
 	WolfBerries(World& ref_world, int set_x, int set_y);
 
 	char GetSymbol() const override;
-	char GetSymbol2() const;
 	int GetColor() const override;
 };
 

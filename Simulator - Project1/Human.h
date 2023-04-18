@@ -14,6 +14,7 @@ public:
 	int DefenseResult(Organism& attacker) override;
 
 	Human(World& ref_world);
+	Human(World& ref_world, int x, int y);
 	void TakeInput();
 
 	void SetMove(int& input);
@@ -23,6 +24,8 @@ public:
 	const bool& PowerActivated() const;
 	const int& GetCooldown();
 	void SetCooldown();
+	void SetCooldown(int set_cooldown);
+	void SetPowerState(bool state);
 	void DecrementCooldown();
 
 	const int CurrentBoost();

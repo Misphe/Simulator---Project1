@@ -15,6 +15,7 @@ public:
 	const Position& GetPrevPosition() const;
 	void UpdatePrevPosition();
 
+	void SetPrevPosition(int x, int y);
 	void GoBack(); // in position
 
 	void RandomMove();
