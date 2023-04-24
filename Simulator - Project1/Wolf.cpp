@@ -34,7 +34,7 @@ std::string Wolf::GetName() const {
 }
 
 int Wolf::GetColor() const {
-	return SET_BG_GRAY;
+	return WOLF_COLOR;
 }
 
 std::unique_ptr<Animal> Wolf::Breed() const {

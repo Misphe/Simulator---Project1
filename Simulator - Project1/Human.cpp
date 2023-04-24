@@ -166,5 +166,5 @@ std::string Human::GetName() const {
 }
 
 int Human::GetColor() const {
-	return SET_BG_GREEN;
+	return HUMAN_COLOR;
 }

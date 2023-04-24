@@ -92,5 +92,5 @@ std::string Fox::GetName() const {
 }
 
 int Fox::GetColor() const {
-	return SET_BG_RED;
+	return FOX_COLOR;
 }

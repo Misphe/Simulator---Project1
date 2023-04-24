@@ -39,6 +39,8 @@ private:
 
 public:
 	void DrawWorld();
+	void DrawLegend();
+	void DrawLogs();
 	void Start();
 	static void MoveCursor(int x, int y);
 

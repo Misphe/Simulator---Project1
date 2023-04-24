@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <string>
 #include <fstream>
+#include <stdexcept>
 
 #define UP_ARROW 72
 #define DOWN_ARROW 80
@@ -16,6 +17,7 @@
 #define SUPERPOWER 'f'
 #define SAVE 's'
 #define LOAD 'l'
+#define REFRESH 'r'
 
 #define BOARD_POS_X 0 // at least 0
 #define BOARD_POS_Y 0 // at least 0
@@ -24,8 +26,8 @@
 #define Y_FRAME 1     // the same sa above but y
 
 #define LOG_X (BOARD_POS_X + size_x * X_SCALING + X_FRAME + 10)
-#define LOG_Y (BOARD_POS_Y + Y_FRAME)
-#define LOG_LENGTH 50
+#define LOG_Y (BOARD_POS_Y)
+#define LOG_LENGTH 20
 #define LOG_LINE_LENGTH 50
 
 #define HUMAN_SYMBOL 'H'
@@ -80,6 +82,20 @@
 #define SET_BG_LIGHTYELLOW 224	 // Map surface
 #define SET_BG_WHITE 240		 // Sheep
 
+#define HUMAN_COLOR			SET_BG_GREEN 
+#define TURTLE_COLOR		SET_BG_CYAN 
+#define FOX_COLOR			SET_BG_RED
+#define GUARANA_COLOR		SET_BG_MAGENTA
+#define DANDELION_COLOR		SET_BG_YELLOW
+#define WOLF_COLOR			SET_BG_GRAY
+#define WOLFBERRIES_COLOR   SET_BG_DARKGRAY
+#define MAP_BORDER_COLOR	SET_BG_LIGHTBLUE
+#define GRASS_COLOR			SET_BG_LIGHTGREEN
+#define PINEBORSCHT_COLOR	SET_BG_LIGHTRED
+#define ANTELOPE_COLOR		SET_BG_LIGHTMAGENTA
+#define MAP_SURFACE_COLOR	SET_BG_LIGHTYELLOW
+#define SHEEP_COLOR			SET_BG_WHITE
+
 #define PLANT_STRENGTH 0
 #define PLANT_SPREAD_CHANCE 20 // one in this amount per turn
 
@@ -122,3 +138,29 @@
 #define GUARANA_COUNT 4
 #define WOLFBERRIES_COUNT 4
 #define PINEBORSCHT_COUNT 4
+
+#define ORGANISMS_COUNT \
+    ( \
+        WOLF_COUNT + \
+        SHEEP_COUNT + \
+        FOX_COUNT + \
+        TURTLE_COUNT + \
+        ANTELOPE_COUNT + \
+        GRASS_COUNT + \
+        DANDELION_COUNT + \
+        GUARANA_COUNT + \
+        WOLFBERRIES_COUNT + \
+        PINEBORSCHT_COUNT + \
+        1 \
+    )
+
+#define UNIQUE_ORGANISMS 11
+#define MIN_MAP_SIZE 8
+
+#define LEGEND_X	LOG_X
+#define LEGEND_Y	(LOG_Y + LOG_LENGTH + 2)
+
+#define CONTROLS_X	LEGEND_X + 20
+#define CONTROLS_Y	LEGEND_Y
+
+#define NOT_IN_PLAY -1

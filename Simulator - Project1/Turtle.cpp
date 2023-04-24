@@ -47,7 +47,7 @@ std::string Turtle::GetName() const {
 }
 
 int Turtle::GetColor() const {
-	return SET_BG_CYAN;
+	return TURTLE_COLOR;
 }
 
 Turtle::Turtle(World& ref_world) : Animal(ref_world) {

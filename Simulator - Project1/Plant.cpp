@@ -15,6 +15,7 @@ void Plant::Action() {
 	new_plant->SetPosition(new_pos);
 	world.PushNewLog(world.CreateBreedLog(*new_plant));
 	world.AddNewOrganism(std::move(new_plant));
+	alive_time++;
 }
 
 void Plant::Collision() {

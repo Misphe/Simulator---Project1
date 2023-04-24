@@ -34,7 +34,7 @@ std::string Sheep::GetName() const {
 }
 
 int Sheep::GetColor() const {
-	return SET_BG_WHITE;
+	return SHEEP_COLOR;
 }
 
 std::unique_ptr<Animal> Sheep::Breed() const {

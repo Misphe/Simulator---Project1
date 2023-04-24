@@ -35,5 +35,5 @@ char Grass::GetSymbol() const {
 }
 
 int Grass::GetColor() const {
-	return SET_BG_LIGHTGREEN;
+	return GRASS_COLOR;
 }

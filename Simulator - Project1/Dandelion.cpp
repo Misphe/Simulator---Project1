@@ -41,5 +41,5 @@ char Dandelion::GetSymbol() const {
 }
 
 int Dandelion::GetColor() const {
-	return SET_BG_YELLOW;
+	return DANDELION_COLOR;
 }

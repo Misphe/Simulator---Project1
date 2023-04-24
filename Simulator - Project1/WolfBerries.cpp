@@ -31,7 +31,7 @@ char WolfBerries::GetSymbol() const {
 }
 
 int WolfBerries::GetColor() const {
-	return SET_BG_DARKGRAY;
+	return WOLFBERRIES_COLOR;
 }
 
 int WolfBerries::DefenseResult(Organism& attacker) {

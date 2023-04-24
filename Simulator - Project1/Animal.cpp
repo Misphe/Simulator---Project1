@@ -45,6 +45,7 @@ void Animal::Collision() {
 				// as attacker is unlinked from the field ( see Action() ) it doesnt 
 				// have to be removed like in the previous case
 				this->Die();
+
 				world.PushNewLog(world.CreateLog(*this, *defender, DEFENDER_WINS));
 				break;
 			case ATTACKER_RETREATS:

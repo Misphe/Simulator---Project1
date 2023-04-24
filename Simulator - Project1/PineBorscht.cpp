@@ -31,7 +31,7 @@ char PineBorscht::GetSymbol() const {
 }
 
 int PineBorscht::GetColor() const {
-	return SET_BG_LIGHTRED;
+	return PINEBORSCHT_COLOR;
 }
 
 void PineBorscht::Action() {

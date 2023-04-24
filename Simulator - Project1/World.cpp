@@ -1,6 +1,6 @@
 #include "World.h"
 #include "Libraries.h"
-#include <sstream>
+#include "slot_error.h"
 
 World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_size_y) {
 	for (int i = 0; i < LOG_LENGTH; i++) {
@@ -53,6 +53,9 @@ World::World(int set_size_x, int set_size_y) : size_x(set_size_x), size_y(set_si
 
 void World::IncrementSlot(const Position& position) {
 	map_slots[position.x][position.y]++;
+	if (map_slots[position.x][position.y] > 2) {
+		throw slot_error("more than 2 organisms on slot" + std::to_string(position.x) + "," + std::to_string(position.y));
+	}
 }
 
 void World::SetSize(int x, int y) {
@@ -73,6 +76,9 @@ void World::SetSize(int x, int y) {
 
 void World::DecrementSlot(const Position& position) {
 	map_slots[position.x][position.y]--;
+	if (map_slots[position.x][position.y] < 0) {
+		throw slot_error("negative organisms on slot" + std::to_string(position.x) + "," + std::to_string(position.y));
+	}
 }
 
 const int& World::GetSizeX() const {
@@ -105,8 +111,14 @@ void World::ExecuteTurn() {
 	for (int i = 0; i < size; i++) {
 		if (!organisms[i]->IsAlive()) continue;
 
-		organisms[i]->Action();
-		organisms[i]->Collision();
+		try {
+			organisms[i]->Action();
+			organisms[i]->Collision();
+		}
+		catch (const slot_error& error) {
+			std::cerr << "slot error: " << error.what() << std::endl;
+		}
+
 		SetOrganismToSlot(*organisms[i].get());
 
 	}
@@ -175,48 +187,103 @@ void World::DrawWorld() {
 
 	delete[] buffer;
 
-	if (SLOW_MODE) {
-		MoveCursor(BOARD_POS_X, BOARD_POS_Y);
-		SetColor(SET_BG_LIGHTBLUE);
-		for (int i = 1; i <= size_x + X_FRAME; i++) {
-			printf("  ");
-		}
-		for (int i = 0; i < size_y; i++) {
+	DrawLogs();
+	SetColor(SET_BG_LIGHTBLUE);
 
-			MoveCursor(BOARD_POS_X, BOARD_POS_Y + Y_FRAME + i);
-			SetColor(SET_BG_LIGHTBLUE);
-			printf("  ");
-			for (int j = 0; j < size_x; j++) {
-				if (organisms_slots[j][i] == nullptr) {
-					SetColor(SET_BG_LIGHTYELLOW);
-					printf("  ");
-				}
-				else {
-					organisms_slots[j][i]->Draw();
-				}
-			}
-			SetColor(SET_BG_LIGHTBLUE);
-			printf("  ");
-		}
-		MoveCursor(BOARD_POS_X, size_y + Y_FRAME + BOARD_POS_Y);
-		for (int i = 1; i <= size_x + X_FRAME; i++) {
-			printf("  ");
-		}
+	DrawLegend();
+
+	// Make cursor invisible
+	std::cout << "\033[?25l";
+}
+
+void World::DrawLegend() {
+	std::vector<std::unique_ptr<Organism>> species;
+	species.emplace_back(new Human(*this,		NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Wolf(*this,		NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Sheep(*this,		NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Fox(*this,			NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Turtle(*this,		NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Antelope(*this,	NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Grass(*this,		NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Dandelion(*this,	NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new Guarana(*this,		NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new WolfBerries(*this, NOT_IN_PLAY, NOT_IN_PLAY));
+	species.emplace_back(new PineBorscht(*this, NOT_IN_PLAY, NOT_IN_PLAY));
+
+	int row = 0;
+	for (auto& organism : species) {
+		MoveCursor(LEGEND_X, LEGEND_Y + (row++));
+		SetColor(organism->GetColor());
+		std::cout << "  ";
+		SetColor(SET_BG_BLACK);
+		SET_LETTER_WHITE;
+		std::cout << " - " << organism->GetName();
 	}
 
-	// logs
+	row = 0;
+	MoveCursor(CONTROLS_X, CONTROLS_Y + (row++));
+	std::cout << "moving - arrows";
+	MoveCursor(CONTROLS_X, CONTROLS_Y + (row++));
+	std::cout << "power - f";
+	MoveCursor(CONTROLS_X, CONTROLS_Y + (row++));
+	std::cout << "refresh - r";
+	MoveCursor(CONTROLS_X, CONTROLS_Y + (row++));
+	std::cout << "save - s";
+	MoveCursor(CONTROLS_X, CONTROLS_Y + (row++));
+	std::cout << "load - l";
+	MoveCursor(CONTROLS_X, CONTROLS_Y + (row++));
+
+	/*std::cout << "Sheep - ";
+	SetColor(SHEEP_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Wolf - ";
+	SetColor(WOLF_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Human - ";
+	SetColor(HUMAN_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Fox - ";
+	SetColor(FOX_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Turtle - ";
+	SetColor(TURTLE_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Antelope - ";
+	SetColor(ANTELOPE_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Grass - ";
+	SetColor(GRASS_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Dandelion - ";
+	SetColor(DANDELION_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "Guarana - ";
+	SetColor(GUARANA_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);
+	std::cout << "WolfBerries - ";
+	SetColor(SHEEP_COLOR);
+	std::cout << " ";
+	SetColor(SET_BG_BLACK);*/
+}
+
+void World::DrawLogs() {
 	SetColor(SET_BG_GREEN);
 	for (int i = 0; i < LOG_LENGTH; i++) {
-		MoveCursor(LOG_X, LOG_Y + LOG_LENGTH - i);
+		MoveCursor(LOG_X, LOG_Y + LOG_LENGTH - i - 1);
 		std::cout << logs[i];
 		for (int j = 0; j < LOG_LINE_LENGTH - logs[i].length(); j++) {
 			printf(" ");
 		}
 	}
-	SetColor(SET_BG_LIGHTBLUE);
-
-	// Make cursor invisible
-	std::cout << "\033[?25l";
 }
 
 // helping tool
@@ -341,6 +408,11 @@ int World::SetInput() {
 			break;
 		case LOAD:
 			LoadWorld();
+			continue;
+			break;
+		case REFRESH:
+			system("cls");
+			DrawWorld();
 			continue;
 			break;
 		};
@@ -540,6 +612,9 @@ void World::LoadWorld() {
 		player->SetCooldown(cooldown);
 		player->SetPowerState(power);
 	}
+
+	SetColor(SET_BG_BLACK);
+	system("cls");
 	DrawWorld();
 
 	file.close();

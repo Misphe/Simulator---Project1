@@ -31,7 +31,7 @@ char Guarana::GetSymbol() const {
 }
 
 int Guarana::GetColor() const {
-	return SET_BG_MAGENTA;
+	return GUARANA_COLOR;
 }
 
 int Guarana::DefenseResult(Organism& attacker) {
