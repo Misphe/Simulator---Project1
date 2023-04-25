@@ -1,18 +1,19 @@
 #pragma once
 #include "Animal.h"
 class Antelope : public Animal {
-public:
-	void Draw() const override;
-	std::unique_ptr<Animal> Breed() const override;
-
-	Antelope(World& ref_world);
-	Antelope(World& ref_world, int set_x, int set_y);
-
+private:
+	bool AntelopeEscaped();
 	void Action() override;
 	void Collision() override;
 	int DefenseResult(Organism& attacker) override;
 
-	bool AntelopeEscaped();
+public:
+	void Draw() const override;
+
+	Antelope(World& ref_world);
+	Antelope(World& ref_world, int set_x, int set_y);
+	std::unique_ptr<Animal> Breed() const override;
+
 
 	char GetSymbol() const override;
 	int GetColor() const override;

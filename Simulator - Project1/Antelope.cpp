@@ -42,7 +42,7 @@ void Antelope::Collision() {
 			GoBack();
 			std::unique_ptr<Animal> new_animal = Breed();
 			if (new_animal->SetChildsPosition(this->GetPosition(), defender->GetPosition())) {
-				//new_animal->Draw();
+
 				world.PushNewLog(world.CreateBreedLog(*new_animal));
 				world.AddNewOrganism(std::move(new_animal));
 			}

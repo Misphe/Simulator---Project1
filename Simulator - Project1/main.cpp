@@ -2,11 +2,12 @@
 #include "World.h"
 
 int main() {
+	SetConsoleTitleW(L"Adrian Belczak 193362 \U0001F600");
 
 	srand(time(NULL));
 
-	int size_x = 20;
-	int size_y = 20;
+	int size_x;
+	int size_y;
 	bool wrong_input = false;
 	do {
 		if (wrong_input) std::cout << "Map is too small." << std::endl;

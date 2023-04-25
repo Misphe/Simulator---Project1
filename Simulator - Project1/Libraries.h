@@ -97,7 +97,8 @@
 #define SHEEP_COLOR			SET_BG_WHITE
 
 #define PLANT_STRENGTH 0
-#define PLANT_SPREAD_CHANCE 20 // one in this amount per turn
+#define PLANT_SPREAD_CHANCE 20 // one in (this number) chance
+#define GUARANA_BOOST 3
 
 #define HUMAN_STRENGTH 5
 #define HUMAN_INITIATIVE 4
@@ -117,6 +118,7 @@
 #define TURTLE_STRENGTH 2
 #define TURTLE_INITIATIVE 1
 #define MIN_ATTACK_TO_KILL 4 
+#define TURTLE_MOVE_CHANCE 4 // one in (this number) chance
 
 #define ANTELOPE_STRENGTH 4
 #define ANTELOPE_INITIATIVE 4

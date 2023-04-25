@@ -37,6 +37,16 @@ private:
 	void ExecuteTurn();
 	void DrawFrame();
 
+	void DeleteDead();
+
+	int SetInput();
+	void SetPlayer();
+	void SetSize(int x, int y);
+
+	void Reset();
+	void SaveWorldState();
+	void LoadWorld();
+
 public:
 	void DrawWorld();
 	void DrawLegend();
@@ -45,15 +55,11 @@ public:
 	static void MoveCursor(int x, int y);
 
 	void AddNewOrganism(std::unique_ptr<Organism>&& organism);
-	void DeleteDead();
+	void AbortPlayer();
 
 	const int& GetSizeX() const;
 	const int& GetSizeY() const;
 
-	int SetInput();
-	void SetPlayer();
-	void SetSize(int x, int y);
-	void AbortPlayer();
 	World(int set_size_x, int set_size_y);
 
 	int GetCountOnSlot(const Position& slot) const;
@@ -77,9 +83,6 @@ public:
 	std::string CreateBreedLog(Organism& new_organism);
 	void SetLog(int i, std::string&& set_log);
 
-	void Reset();
-	void SaveWorldState();
-	void LoadWorld();
 	std::unique_ptr<Organism> CreateOrganismFromFile(char symbol, int x, int y);
 
 	~World();

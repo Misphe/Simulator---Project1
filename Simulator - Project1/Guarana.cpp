@@ -35,7 +35,7 @@ int Guarana::GetColor() const {
 }
 
 int Guarana::DefenseResult(Organism& attacker) {
-	attacker.SetStrength(attacker.GetStrength() + 3);
+	attacker.SetStrength(attacker.GetStrength() + GUARANA_BOOST);
 	return ATTACKER_EATS;
 }
 

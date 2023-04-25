@@ -1,8 +1,9 @@
 #pragma once
 #include "Plant.h"
 class Dandelion : public Plant {
-public:
+private:
 	void Action() override;
+public:
 	void Draw() const override;
 	std::unique_ptr<Plant> Spread() const override;
 	std::string GetName() const override;

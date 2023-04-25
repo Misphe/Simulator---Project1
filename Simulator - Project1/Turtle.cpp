@@ -21,7 +21,7 @@ void Turtle::Action() {
 	UpdatePrevPosition();
 
 	// if rand() returns 0 -> animal moves (that's 25% chance)
-	if (!(rand() % 4)) {
+	if (!(rand() % TURTLE_MOVE_CHANCE)) {
 		Animal::Action();
 		return;
 	}

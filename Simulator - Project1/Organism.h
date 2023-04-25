@@ -30,6 +30,9 @@ protected:
 	//Position prev_position;
 	World& world;
 
+	void MoveX(int change);
+	void MoveY(int change);
+
 public:
 	const int& GetX() const;
 	const int& GetY() const;
@@ -38,13 +41,11 @@ public:
 	const int& GetAliveTime() const;
 	const Position& GetPosition() const;
 	const bool& IsAlive() const;
-	//const Position& GetPrevPosition() const;
+
 	virtual char GetSymbol() const = 0;
 	virtual int GetColor() const = 0;
 	virtual std::string GetName() const = 0;
 
-	void MoveX(int change);
-	void MoveY(int change);
 
 	void SetX(int new_x);
 	void SetY(int new_y);
